@@ -24,23 +24,19 @@ class Router
     protected $routes;
 
     /**
-     * @var Container
-     */
-    protected $container;
-
-    /**
      * @var array
      */
     protected $attributes = [];
 
     /**
      * Router constructor.
-     * @param Container|null $container
+     * @param RouteCollection|null $routes
+     * @param array $attributes
      */
-    public function __construct(Container $container = null)
+    public function __construct(RouteCollection $routes = null, array $attributes = [])
     {
-        $this->routes = new RouteCollection();
-        $this->container = $container ? $container : new Container();
+        $this->routes = $routes ? $routes: new RouteCollection();
+        $this->attributes = $attributes;
     }
 
     /**
@@ -170,7 +166,11 @@ class Router
     public function createRoute($path, $methods, $action)
     {
         if (isset($this->attributes['prefix'])) {
-            $path = $this->attributes['prefix'] . '/' . trim($path, '/');
+            $path = rtrim($this->attributes['prefix'] . '/' . trim($path, '/'), '/');
+        }
+
+        if (!$action instanceof \Closure && isset($this->attributes['namespace'])) {
+            $action = '\\'.trim($this->attributes['namespace'] . '\\' . trim($action, '\\'), '\\');
         }
 
         $route = new Route($path);
@@ -195,17 +195,6 @@ class Router
         $name = md5(implode('', $route->getMethods()) . $route->getPath());
         $route->name($name);
         $this->routes->add($name, $route);
-
-        /**
-         * @var RouteCollection $routes
-         */
-        $routes = $this->container->get('routes');
-        if (is_null($routes)) {
-            $routes = new RouteCollection();
-        }
-        $routes->addCollection($this->routes);
-        $this->container->add('routes', $routes);
-
         return $route;
     }
 
@@ -218,6 +207,12 @@ class Router
             $prefix = isset($this->attributes['prefix']) ? $this->attributes['prefix'] : '/';
             $prefix = $prefix . '/' . trim($attributes['prefix'], '/');
             $this->attributes['prefix'] = $prefix;
+        }
+
+        if (isset($attributes['namespace'])) {
+            $namespace = isset($this->attributes['namespace']) ? $this->attributes['namespace'] : '\\';
+            $namespace = $namespace . '\\' . trim($attributes['namespace'], '\\');
+            $this->attributes['namespace'] = $namespace;
         }
 
         if (isset($attributes['middleware'])) {
