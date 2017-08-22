@@ -1,72 +1,80 @@
 # routing
 A routing use "symfony/routing" and like "laravel/routing" style
+
 To install it via `composer`
 
 ```shell
 composer require heropoo/routing
 ```
 
-###example:
+### example:
 ```php
-    <?php
-    require '../vendor/autoload.php';
-    
+<?php
+require '../vendor/autoload.php';
+
+use Moon\Routing\Router;
+
+
+$router = new Router(null, [
+    'namespace'=>'app\\controllers',    //support controller namespace
+    'middleware'=>[                     //support middleware
+        'startSession',
+        'verifyCSRFToken',
+        'auth'
+    ],
+    'prefix'=>''                        //support prefix
+]);
+
+// action also can be a Closure
+$router->get('/', function(){
+    return 'Welcome ＼( ^▽^ )／';
+});
+
+//route parameter
+$router->get('/hello/{name}', function($name){
+    return 'Hello '.$name;
+})->setRequirement('name', '([\w\s\x{4e00}-\x{9fa5}]+)?');  //  Perform a regular expression match
+
+$router->get('/login', 'UserController::login')->name('login'); // name your route
+$router->post('/login', 'UserController::post_login');
+
+//use route group 
+$router->group(['prefix'=>'user'], function($router){
     /**
-     * define routes
+     * @var Router $router
      */
-    
-    $router = new \Moon\Routing\Router(null, [
-        'namespace'=>'app\\controllers',
-        'middleware'=>[
-            'csrfFilter', 'sessionStart'
-        ],
-        'prefix'=>'tt'
-    ]);
-    $router->get('/', function(){
-        return 'index';
-    });
-    $router->get('/home/{name}', 'IndexController::home')->setRequirement('name', '([\w\s\x{4e00}-\x{9fa5}]+)?');
-    $router->get('/login', 'IndexController::login')->name('login');
-    $router->post('/login', 'IndexController::post_login');
-    
-    $res = $router->any('api', 'ApiController::index')->middleware(['api.auth', 'api.oauth']);
-    //var_dump($res);
-    
-    $router->group(['prefix'=>'admin/', 'middleware'=>'auth', 'namespace'=>'admin'], function($router){
-        $router->post('/login', 'AdminController::login');
-    });
-    
-    $router->group(['prefix'=>'admin2/', 'middleware'=>'auth2', 'namespace'=>'admin2'], function($router){
-        $router->post('/login', 'Admin2Controller::login');
-        $router->group(['prefix'=>'admin3/', 'middleware'=>'auth3', 'namespace'=>'admin3'], function($router){
-            $router->post('/login', 'Admin3Controller::login');
-            $router->post('/logout', 'Admin3Controller::login');
-        });
-    });
-    
-    $routes = $router->getRoutes();
-    var_dump(count($routes));
-    foreach($routes as $route){
-        var_dump($route->getName().'|'.$route->getPath().'|'.json_encode($route->getMethods()).'|'.json_encode($route->getMiddleware()).'|'.var_export($route->getDefault('_controller'), 1));
-    }
-    
-    /**
-     * match request
-     */
-    $request = \Symfony\Component\HttpFoundation\Request::createFromGlobals();
-    
-    $path_info = $request->getPathInfo();
-    
-    echo '<hr>'.$path_info.'<hr>';
-    
-    $context = new \Symfony\Component\Routing\RequestContext();
-    $context->fromRequest($request);
-    
-    //match
-    $matcher = new \Symfony\Component\Routing\Matcher\UrlMatcher($routes, $context);
-    $parameters = $matcher->match($request->getPathInfo());
-    
-    var_dump($parameters);
+    $router->post('delete/{id}', 'UserController::delete');
+});
+
+// match GET or POST request method 
+$router->match(['get', 'post'], '/api', 'ApiController::index');
+
+// match all request method
+$router->any('/other', 'ApiController::other');
+
+echo '<pre>';
+var_dump($router->getRoutes());
+
+
+/**
+ * match request
+ */
+$request = \Symfony\Component\HttpFoundation\Request::createFromGlobals();
+
+$path_info = $request->getPathInfo();
+
+echo '<hr>'.$path_info.'<hr>';
+
+$context = new \Symfony\Component\Routing\RequestContext();
+$context->fromRequest($request);
+
+//match
+$matcher = new \Symfony\Component\Routing\Matcher\UrlMatcher($routes, $context);
+$parameters = $matcher->match($path_info);
+
+//match request
+var_dump($parameters);
+
 ```
 
 Now use matched result to handle your controller's method or Closure! ＼( ^▽^ )／
