@@ -1,5 +1,12 @@
 # routing
 A routing use "symfony/routing" and like "laravel/routing" style
+To install it via `composer`
+
+```shell
+composer require heropoo/routing
+```
+
+###example:
 ```php
     <?php
     require '../vendor/autoload.php';
@@ -62,4 +69,4 @@ A routing use "symfony/routing" and like "laravel/routing" style
     var_dump($parameters);
 ```
 
-Now use matched result to handle your controller method or Closure! ＼( ^▽^ )／
+Now use matched result to handle your controller's method or Closure! ＼( ^▽^ )／

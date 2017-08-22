@@ -1,11 +1,12 @@
 <?php
+
 namespace Moon\Routing;
 
 use Symfony\Component\Routing\RouteCollection;
 
 /**
  * Router.
- * User: heropoo
+ * User: Heropoo
  * Date: 2017/8/8
  * Time: 17:33
  */
@@ -35,7 +36,7 @@ class Router
      */
     public function __construct(RouteCollection $routes = null, array $attributes = [])
     {
-        $this->routes = $routes ? $routes: new RouteCollection();
+        $this->routes = $routes ? $routes : new RouteCollection();
         $this->attributes = $attributes;
     }
 
@@ -50,7 +51,8 @@ class Router
     /**
      * @return array
      */
-    public function getAttributes(){
+    public function getAttributes()
+    {
         return $this->attributes;
     }
 
@@ -61,7 +63,7 @@ class Router
      */
     public function head($path, $action)
     {
-        return $this->createRoute($path, 'HEAD', $action);
+        return $this->addRoute($path, 'HEAD', $action);
     }
 
     /**
@@ -71,7 +73,7 @@ class Router
      */
     public function get($path, $action)
     {
-        return $this->createRoute($path, 'GET', $action);
+        return $this->addRoute($path, 'GET', $action);
     }
 
     /**
@@ -81,7 +83,7 @@ class Router
      */
     public function post($path, $action)
     {
-        return $this->createRoute($path, 'POST', $action);
+        return $this->addRoute($path, 'POST', $action);
     }
 
     /**
@@ -91,7 +93,7 @@ class Router
      */
     public function put($path, $action)
     {
-        return $this->createRoute($path, 'PUT', $action);
+        return $this->addRoute($path, 'PUT', $action);
     }
 
     /**
@@ -101,7 +103,7 @@ class Router
      */
     public function patch($path, $action)
     {
-        return $this->createRoute($path, 'PATCH', $action);
+        return $this->addRoute($path, 'PATCH', $action);
     }
 
     /**
@@ -111,7 +113,7 @@ class Router
      */
     public function delete($path, $action)
     {
-        return $this->createRoute($path, 'DELETE', $action);
+        return $this->addRoute($path, 'DELETE', $action);
     }
 
     /**
@@ -121,7 +123,7 @@ class Router
      */
     public function options($path, $action)
     {
-        return $this->createRoute($path, 'OPTIONS', $action);
+        return $this->addRoute($path, 'OPTIONS', $action);
     }
 
     /**
@@ -132,7 +134,7 @@ class Router
      */
     protected function match($methods, $path, $action)
     {
-        return $this->createRoute($path, $methods, $action);
+        return $this->addRoute($path, $methods, $action);
     }
 
     /**
@@ -142,7 +144,7 @@ class Router
      */
     public function any($path, $action)
     {
-        return $this->createRoute($path, static::$verbs, $action);
+        return $this->addRoute($path, static::$verbs, $action);
     }
 
     /**
@@ -170,7 +172,7 @@ class Router
         }
 
         if (!$action instanceof \Closure && isset($this->attributes['namespace'])) {
-            $action = '\\'.trim($this->attributes['namespace'] . '\\' . trim($action, '\\'), '\\');
+            $action = '\\' . trim($this->attributes['namespace'] . '\\' . trim($action, '\\'), '\\');
         }
 
         $route = new Route($path);
@@ -181,18 +183,20 @@ class Router
             $route->middleware($this->attributes['middleware']);
         }
 
-        $this->addRoute($route);
-
         return $route;
     }
 
     /**
-     * @param \Moon\Routing\Route $route
+     * @param string $path
+     * @param string|array $methods
+     * @param string|\Closure $action
      * @return \Moon\Routing\Route
      */
-    public function addRoute(Route $route)
+    public function addRoute($path, $methods, $action)
     {
-        $name = md5(implode('', $route->getMethods()) . $route->getPath());
+        $route = $this->createRoute($path, $methods, $action);
+        //$name = md5(implode('.', $route->getMethods()) . '.' . $route->getPath());
+        $name = implode('.', $route->getMethods()) . '.' . $route->getPath();
         $route->name($name);
         $this->routes->add($name, $route);
         return $route;
