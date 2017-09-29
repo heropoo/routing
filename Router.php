@@ -132,7 +132,7 @@ class Router
      * @param string|\Closure $action
      * @return \Moon\Routing\Route
      */
-    protected function match($methods, $path, $action)
+    public function match($methods, $path, $action)
     {
         return $this->addRoute($path, $methods, $action);
     }
@@ -196,7 +196,7 @@ class Router
     {
         $route = $this->createRoute($path, $methods, $action);
         //$name = md5(implode('.', $route->getMethods()) . '.' . $route->getPath());
-        $name = implode('.', $route->getMethods()) . '.' . $route->getPath();
+        $name = implode('.', $route->getMethods()) . ':' . $route->getPath();
         $route->name($name);
         $this->routes->add($name, $route);
         return $route;
