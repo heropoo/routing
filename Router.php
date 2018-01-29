@@ -234,10 +234,12 @@ class Router
     {
         return $this->routes;
     }
-
-//    public static function __callStatic($name, $arguments)
-//    {
-//        $instance = new static;
-//        return call_user_func_array([$instance, $name], $arguments);
-//    }
+	
+	/**
+     * @param string $name
+     * @return null|Route
+     */
+    public function getRoute($name){
+        return $this->routes->get($name);
+    }
 }
