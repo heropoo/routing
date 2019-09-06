@@ -18,7 +18,7 @@ $router = new \Moon\Routing\Router(null, [
     'middleware'=>[
         'csrfFilter', 'sessionStart'
     ],
-    'prefix'=>'tt'
+    'prefix'=>'demo'
 ]);
 $router->get('/', function(){
     return 'index';

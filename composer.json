@@ -1,6 +1,6 @@
 {
   "name": "heropoo/routing",
-  "description": "A routing use \"symfony/routing\" and like \"laravel/routing\" style",
+  "description": "A routing like \"laravel/routing\" style",
   "type": "library",
   "license": "MIT",
   "authors": [
@@ -9,10 +9,7 @@
       "email": "aiyouyou1000@163.com"
     }
   ],
-  "require": {
-    "symfony/http-foundation": "^3.3",
-    "symfony/routing": "^3.3"
-  },
+  "require": {},
   "autoload": {
     "psr-4": {
       "Moon\\Routing\\": ""

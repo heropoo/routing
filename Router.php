@@ -2,8 +2,6 @@
 
 namespace Moon\Routing;
 
-use Symfony\Component\Routing\RouteCollection;
-
 /**
  * Router.
  * User: Heropoo
@@ -17,7 +15,7 @@ class Router
      *
      * @var array
      */
-    public static $verbs = ['GET', 'HEAD', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'];
+    const VERBS = ['GET', 'HEAD', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'];
 
     /**
      * @var RouteCollection
@@ -59,7 +57,7 @@ class Router
     /**
      * @param string $path
      * @param string|\Closure $action
-     * @return \Moon\Routing\Route
+     * @return Route
      */
     public function head($path, $action)
     {
@@ -69,7 +67,7 @@ class Router
     /**
      * @param string $path
      * @param string|\Closure $action
-     * @return \Moon\Routing\Route
+     * @return Route
      */
     public function get($path, $action)
     {
@@ -79,7 +77,7 @@ class Router
     /**
      * @param string $path
      * @param string|\Closure $action
-     * @return \Moon\Routing\Route
+     * @return Route
      */
     public function post($path, $action)
     {
@@ -89,7 +87,7 @@ class Router
     /**
      * @param string $path
      * @param string|\Closure $action
-     * @return \Moon\Routing\Route
+     * @return Route
      */
     public function put($path, $action)
     {
@@ -99,7 +97,7 @@ class Router
     /**
      * @param string $path
      * @param string|\Closure $action
-     * @return \Moon\Routing\Route
+     * @return Route
      */
     public function patch($path, $action)
     {
@@ -109,7 +107,7 @@ class Router
     /**
      * @param string $path
      * @param string|\Closure $action
-     * @return \Moon\Routing\Route
+     * @return Route
      */
     public function delete($path, $action)
     {
@@ -119,7 +117,7 @@ class Router
     /**
      * @param string $path
      * @param string|\Closure $action
-     * @return \Moon\Routing\Route
+     * @return Route
      */
     public function options($path, $action)
     {
@@ -130,7 +128,7 @@ class Router
      * @param string|array $methods
      * @param string $path
      * @param string|\Closure $action
-     * @return \Moon\Routing\Route
+     * @return Route
      */
     public function match($methods, $path, $action)
     {
@@ -140,30 +138,30 @@ class Router
     /**
      * @param string $path
      * @param string|\Closure $action
-     * @return \Moon\Routing\Route
+     * @return Route
      */
     public function any($path, $action)
     {
-        return $this->addRoute($path, static::$verbs, $action);
+        return $this->addRoute($path, static::VERBS, $action);
     }
 
     /**
      * @param array $attributes
      * @param \Closure $callback
-     * @return mixed
      */
     public function group($attributes, \Closure $callback)
     {
         $router = clone $this;
         $router->mergeAttributes($attributes);
-        return $callback($router);
+        $callback($router);
+        unset($router);
     }
 
     /**
      * @param string $path
      * @param string|array $methods
      * @param string|\Closure $action
-     * @return \Moon\Routing\Route
+     * @return Route
      */
     public function createRoute($path, $methods, $action)
     {
@@ -175,9 +173,11 @@ class Router
             $action = '\\' . trim($this->attributes['namespace'] . '\\' . trim($action, '\\'), '\\');
         }
 
-        $route = new Route($path);
-        $route->setMethods((array)$methods);
-        $route->setDefault('_controller', $action);
+        $route = new Route([
+            'path' => $path,
+            'methods' => (array)$methods,
+            'action' => $action
+        ]);
 
         if (isset($this->attributes['middleware'])) {
             $route->middleware($this->attributes['middleware']);
@@ -190,7 +190,7 @@ class Router
      * @param string $path
      * @param string|array $methods
      * @param string|\Closure $action
-     * @return \Moon\Routing\Route
+     * @return Route
      */
     public function addRoute($path, $methods, $action)
     {
@@ -234,12 +234,13 @@ class Router
     {
         return $this->routes;
     }
-	
-	/**
+
+    /**
      * @param string $name
      * @return null|Route
      */
-    public function getRoute($name){
+    public function getRoute($name)
+    {
         return $this->routes->get($name);
     }
 }
