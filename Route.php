@@ -10,6 +10,11 @@ namespace Moon\Routing;
 
 /**
  * Class Route
+ * @method string getName()
+ * @method string getPath()
+ * @method array getMethods()
+ * @method string|\Closure getAction()
+ * @method array getMiddleware()
  * @package Moon\Routing
  */
 class Route
@@ -32,10 +37,11 @@ class Route
     /** @var array $methods */
     protected $methods = [];
 
-    /** @var mixed $action */
+    /** @var string|\Closure $action */
     protected $action;
 
-    protected $regex;
+    /** @var array $regex */
+    protected $regex = [];
 
     /** @var array $middleware */
     protected $middleware = [];
@@ -63,30 +69,6 @@ class Route
     }
 
     /**
-     * @return array
-     */
-    public function getMethods()
-    {
-        return $this->methods;
-    }
-
-    /**
-     * @return string
-     */
-    public function getName()
-    {
-        return $this->name;
-    }
-
-    public function getPath(){
-        return $this->path;
-    }
-
-    public function getAction(){
-        return $this->action;
-    }
-
-    /**
      * set middleware
      * @param string|array $middleware
      * @return $this
@@ -99,22 +81,25 @@ class Route
     }
 
     /**
-     * @return array
+     * set regex
+     * @param string $key
+     * @param string $pattern
+     * @return $this
      */
-    public function getMiddleware()
+    public function regex($key, $pattern)
     {
-        return $this->middleware;
+        $this->regex[$key] = $pattern;
+        return $this;
     }
 
-//    public function __call($name, $arguments)
-//    {
-//        if (strpos($name, 'set') === 0) { //set protected attribute
-//            $attribute = lcfirst(substr($name, 3));
-//            if (property_exists($this, $this->$attribute)) {
-//                $this->$attribute = $arguments;
-//                return $this;
-//            }
-//        }
-//        throw new \BadMethodCallException('Call to undefined method ' . get_class($this) . '::' . $name . '()');
-//    }
+    public function __call($name, $arguments)
+    {
+        if (strpos($name, 'get') === 0) { //get protected attribute
+            $attribute = lcfirst(substr($name, 3));
+            if (property_exists($this, $attribute)) {
+                return $this->$attribute;
+            }
+        }
+        throw new \BadMethodCallException('Call to undefined method ' . get_class($this) . '::' . $name . '()');
+    }
 }

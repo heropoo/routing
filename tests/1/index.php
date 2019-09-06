@@ -22,7 +22,7 @@ $router->get('/', function () {
     return 'index';
 });
 
-//$router->get('/home/{name}', 'IndexController::home')->setRequirement('name', '([\w\s\x{4e00}-\x{9fa5}]+)?');
+$router->get('/home/{name}', 'IndexController::home')->regex('name', '([\w\s\x{4e00}-\x{9fa5}]+)?');
 $router->get('/login', 'IndexController::login')->name('login');
 $router->post('/login', 'IndexController::post_login');
 
@@ -40,7 +40,6 @@ $router->group(['prefix' => 'admin2/', 'middleware' => 'auth2', 'namespace' => '
     });
 });
 
-var_dump($res);
 
 $routes = $router->getRoutes();
 //var_dump(count($routes));
