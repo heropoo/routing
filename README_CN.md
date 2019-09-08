@@ -1,9 +1,9 @@
 # routing
-A routing like "laravel/routing" style
+一个简单的路由用法和"laravel/routing"一样简单
 
-[中文说明](./README_CN.md)
+[README](./README.md)
 
-To install it via `composer`
+通过`composer`安装
 
 ```shell
 composer require heropoo/routing
@@ -18,34 +18,34 @@ require_once './vendor/autoload.php';
 use Moon\Routing\Router;
 
 $router = new Router(null, [
-    'namespace'=>'app\\controllers',    //support controller namespace
-    'middleware'=>[                     //support middleware
+    'namespace'=>'app\\controllers',    //支持控制器命名空间
+    'middleware'=>[                     //支持中间件
         'startSession',
         'verifyCSRFToken',
         'auth'
     ],
-    'prefix'=>''                        //support prefix
+    'prefix'=>''                        //支持前缀
 ]);
 
-// action also can be a Closure
+// 方法action可以是一个匿名函数
 $router->get('/', function(){
     return 'Welcome ＼( ^▽^ )／';
 });
 
-//route parameter
+//支持路由参数
 $router->get('/hello/{name}', function($name){
     return 'Hello '.$name;
 });
 
-$router->get('/login', 'UserController::login')->name('login'); // name your route
+$router->get('/login', 'UserController::login')->name('login'); // 支持给你的路由自定义名称
 $router->post('login', 'UserController::post_login');
 
-//use route group
+//支持路由组
 $router->group(['prefix'=>'user'], function($router){
     /**
      * @var Router $router
      */
-    $router->post('delete/{id:\d+}', 'UserController::delete'); // {param:type}
+    $router->post('delete/{id:\d+}', 'UserController::delete'); //路由参数 支持正则类型 {param:type}
 });
 
 // match GET or POST request method
@@ -59,7 +59,7 @@ var_dump($router->getRoutes());
 
 
 /**
- * match request
+ * 匹配请求
  */
 
 echo '$_SERVER[\'REQUEST_URI\']: ' . $_SERVER['REQUEST_URI'].PHP_EOL;
@@ -75,15 +75,18 @@ echo 'path: '.$path.PHP_EOL;
 echo 'method: '.$method.PHP_EOL;
 
 /**
+ * 匹配到返回一个数组, 匹配不到抛出一个异常 UrlMatchException
  * return [
- *   'route' => $route,  // Route
- *   'params' => $params // array
+ *   'route' => $route,  // Route 对象
+ *   'params' => $params // array 路由参数
  * ];
  *
  */
 $res = $router->dispatch($path, $method);
 
 var_dump($res);
+
+// 该有的都有了,调用你的控制器吧
 
 ```
 
