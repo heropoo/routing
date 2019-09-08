@@ -1,12 +1,22 @@
 <?php
+/**
+ * User: Heropoo
+ * Date: 2017/8/8
+ * Time: 17:33
+ */
 
 namespace Moon\Routing;
 
 /**
- * Router.
- * User: Heropoo
- * Date: 2017/8/8
- * Time: 17:33
+ * Class Router
+ * @method Route get(string $path, string|\Closure $action)
+ * @method Route head(string $path, string|\Closure $action)
+ * @method Route post(string $path, string|\Closure $action)
+ * @method Route put(string $path, string|\Closure $action)
+ * @method Route patch(string $path, string|\Closure $action)
+ * @method Route delete(string $path, string|\Closure $action)
+ * @method Route options(string $path, string|\Closure $action)
+ * @package Moon\Routing
  */
 class Router
 {
@@ -52,76 +62,6 @@ class Router
     public function getAttributes()
     {
         return $this->attributes;
-    }
-
-    /**
-     * @param string $path
-     * @param string|\Closure $action
-     * @return Route
-     */
-    public function head($path, $action)
-    {
-        return $this->addRoute($path, 'HEAD', $action);
-    }
-
-    /**
-     * @param string $path
-     * @param string|\Closure $action
-     * @return Route
-     */
-    public function get($path, $action)
-    {
-        return $this->addRoute($path, 'GET', $action);
-    }
-
-    /**
-     * @param string $path
-     * @param string|\Closure $action
-     * @return Route
-     */
-    public function post($path, $action)
-    {
-        return $this->addRoute($path, 'POST', $action);
-    }
-
-    /**
-     * @param string $path
-     * @param string|\Closure $action
-     * @return Route
-     */
-    public function put($path, $action)
-    {
-        return $this->addRoute($path, 'PUT', $action);
-    }
-
-    /**
-     * @param string $path
-     * @param string|\Closure $action
-     * @return Route
-     */
-    public function patch($path, $action)
-    {
-        return $this->addRoute($path, 'PATCH', $action);
-    }
-
-    /**
-     * @param string $path
-     * @param string|\Closure $action
-     * @return Route
-     */
-    public function delete($path, $action)
-    {
-        return $this->addRoute($path, 'DELETE', $action);
-    }
-
-    /**
-     * @param string $path
-     * @param string|\Closure $action
-     * @return Route
-     */
-    public function options($path, $action)
-    {
-        return $this->addRoute($path, 'OPTIONS', $action);
     }
 
     /**
@@ -242,5 +182,19 @@ class Router
     public function getRoute($name)
     {
         return $this->routes->get($name);
+    }
+
+    public function __call($name, $arguments)
+    {
+        $method = strtoupper($name);
+        if (in_array($method, static::VERBS)) {
+            if (count($arguments) < 2) {
+                throw new \InvalidArgumentException('Too few arguments to function ' . get_class($this) . '::' . $name . '()');
+            }
+            $path = $arguments[0];
+            $action = $arguments[1];
+            return $this->addRoute($path, $method, $action);
+        }
+        throw new \BadMethodCallException('Call to undefined method ' . get_class($this) . '::' . $name . '()');
     }
 }

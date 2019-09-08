@@ -4,6 +4,8 @@
  * Time: 17:57
  */
 
+ini_set('display_errors', 'On');
+
 require_once __DIR__ . '/../../Route.php';
 require_once __DIR__ . '/../../Router.php';
 require_once __DIR__ . '/../../RouteCollection.php';
@@ -28,7 +30,7 @@ $router->post('/login', 'IndexController::post_login');
 
 $res = $router->any('api', 'ApiController::index')->middleware(['api.auth', 'api.oauth']);
 
-$router->group(['prefix' => 'admin/', 'middleware' => 'auth', 'namespace' => 'admin'], function ($router) {
+$router->group(['prefix' => 'admin/', 'middleware' => 'auth', 'namespace' => 'admin'], function (Router $router) {
     $router->post('/login', 'AdminController::login');
 });
 
