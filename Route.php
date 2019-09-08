@@ -40,9 +40,6 @@ class Route
     /** @var string|\Closure $action */
     protected $action;
 
-    /** @var array $regex */
-    protected $regex = [];
-
     /** @var array $middleware */
     protected $middleware = [];
 
@@ -77,18 +74,6 @@ class Route
     {
         $this->middleware = array_merge($this->middleware, (array)$middleware);
         $this->middleware = array_unique($this->middleware);
-        return $this;
-    }
-
-    /**
-     * set regex
-     * @param string $key
-     * @param string $pattern
-     * @return $this
-     */
-    public function regex($key, $pattern)
-    {
-        $this->regex[$key] = $pattern;
         return $this;
     }
 

@@ -106,8 +106,10 @@ class Router
     public function createRoute($path, $methods, $action)
     {
         if (isset($this->attributes['prefix'])) {
-            $path = rtrim($this->attributes['prefix'] . '/' . trim($path, '/'), '/');
+//            $path = rtrim($this->attributes['prefix'] . '/' . trim($path, '/'), '/');
+            $path = $this->attributes['prefix'] . '/' . $path;
         }
+        $path = str_replace('//', '/', '/' . $path);
 
         if (!$action instanceof \Closure && isset($this->attributes['namespace'])) {
             $action = '\\' . trim($this->attributes['namespace'] . '\\' . trim($action, '\\'), '\\');
@@ -182,6 +184,47 @@ class Router
     public function getRoute($name)
     {
         return $this->routes->get($name);
+    }
+
+    /**
+     * Dispatch
+     * @param string $path
+     * @param string $method
+     * @return array
+     * @throws UrlMatchException
+     */
+    public function dispatch($path, $method)
+    {
+        foreach ($this->getRoutes() as $route) {
+            if (in_array($method, $route->getMethods())) {
+                /** @var Route $route */
+                $pattern = "#^{$route->getPath()}$#U";
+                $param_keys = [];
+                if ($res = preg_match_all("#({.*?})#", $route->getPath(), $matches)) {
+                    foreach ($matches[0] as $v) {
+                        $tmp = explode(':', substr($v, 1, strlen($v) - 2));
+                        //$patterns[$tmp[0]] = $tmp[1];
+                        $param_pattern = isset($tmp[1]) ? '(' . $tmp[1] . ')' : '([^/]+)'; // default param pattern
+                        $pattern = str_replace($v, $param_pattern, $pattern);
+                        $param_keys[] = $tmp[0];
+                    }
+                }
+                //echo $pattern;
+                if (@preg_match($pattern, $path, $matches)) {
+                    unset($matches[0]);
+                    $params = [];
+                    foreach ($matches as $v) {
+                        $key = array_shift($param_keys);
+                        $params[$key] = $v;
+                    }
+                    return [
+                        'route' => $route->getName(),
+                        'params' => $params
+                    ];
+                }
+            }
+        }
+        throw new UrlMatchException('No Route Matched for path: "' . $path . '"', 404);
     }
 
     public function __call($name, $arguments)

@@ -4,15 +4,21 @@
  * Time: 17:57
  */
 
+$start_time = microtime(true);
+
 ini_set('display_errors', 'On');
 
 require_once __DIR__ . '/../../Route.php';
 require_once __DIR__ . '/../../Router.php';
 require_once __DIR__ . '/../../RouteCollection.php';
+require_once __DIR__ . '/../../UrlMatchException.php';
 
 use Moon\Routing\Router;
 
-$router = new Router(null, [
+$router = new Router();
+$router->get('', 'SiteController::index');
+
+$router = new Router($router->getRoutes(), [
     'namespace' => 'app\\controllers',
     'middleware' => [
         'csrfFilter', 'sessionStart'
@@ -24,11 +30,12 @@ $router->get('/', function () {
     return 'index';
 });
 
-$router->get('/home/{name}', 'IndexController::home')->regex('name', '([\w\s\x{4e00}-\x{9fa5}]+)?');
+$router->get('/home/{name}', 'IndexController::home');
 $router->get('/login', 'IndexController::login')->name('login');
 $router->post('/login', 'IndexController::post_login');
 
-$res = $router->any('api', 'ApiController::index')->middleware(['api.auth', 'api.oauth']);
+$res = $router->any('api/{aaa}', 'ApiController::index')->middleware(['api.auth', 'api.oauth']);
+$res = $router->get('api/{version}/user/{id:\d+}', 'ApiControllers\\UserController::user')->middleware(['api.auth', 'api.oauth']);
 
 $router->group(['prefix' => 'admin/', 'middleware' => 'auth', 'namespace' => 'admin'], function (Router $router) {
     $router->post('/login', 'AdminController::login');
@@ -60,4 +67,27 @@ foreach ($routes as $route) {
 }
 echo '</table>';
 
-echo 'Memory used: '.(memory_get_usage()/1024).'KB';
+echo '<hr>Memory used: ' . (memory_get_usage() / 1024) . 'KB<br>';
+echo 'Time used: ' . (microtime(true) - $start_time) . 's<br>';
+
+echo '<hr>$_SERVER[\'REQUEST_URI\']: ' . $_SERVER['REQUEST_URI'] . '<br>';
+echo '$_SERVER[\'PHP_SELF\']: ' . $_SERVER['PHP_SELF'] . '<br>';
+echo '$_SERVER[\'SCRIPT_NAME\']: ' . $_SERVER['SCRIPT_NAME'] . '<br>';
+
+$uri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
+$path = substr($uri, -(strlen($uri) - strlen(dirname($_SERVER['SCRIPT_NAME']))));
+$path = str_replace('//', '/', '/' . $path);
+$method = $_SERVER['REQUEST_METHOD'];
+
+echo 'path: '.$path.'<br>';
+echo 'method: '.$method.'<br>';
+
+echo '<hr>Memory used: ' . (memory_get_usage() / 1024) . 'KB<br>';
+echo 'Time used: ' . (microtime(true) - $start_time) . 's<br>';
+
+$res = $router->dispatch($path, $method);
+echo '<hr>';
+var_dump($res);
+
+echo '<hr>Memory used: ' . (memory_get_usage() / 1024) . 'KB<br>';
+echo 'Time used: ' . (microtime(true) - $start_time) . 's<br>';
