@@ -109,7 +109,9 @@ class Router
 //            $path = rtrim($this->attributes['prefix'] . '/' . trim($path, '/'), '/');
             $path = $this->attributes['prefix'] . '/' . $path;
         }
-        $path = str_replace('//', '/', '/' . $path);
+
+        $path = strpos($path, '/') === 0 ? $path : '/' . $path;
+        $path = str_replace('//', '/', $path);
 
         if (!$action instanceof \Closure && isset($this->attributes['namespace'])) {
             $action = '\\' . trim($this->attributes['namespace'] . '\\' . trim($action, '\\'), '\\');
@@ -218,7 +220,7 @@ class Router
                         $params[$key] = $v;
                     }
                     return [
-                        'route' => $route->getName(),
+                        'route' => $route,
                         'params' => $params
                     ];
                 }

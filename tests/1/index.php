@@ -4,90 +4,76 @@
  * Time: 17:57
  */
 
-$start_time = microtime(true);
-
 ini_set('display_errors', 'On');
 
-require_once __DIR__ . '/../../Route.php';
-require_once __DIR__ . '/../../Router.php';
-require_once __DIR__ . '/../../RouteCollection.php';
-require_once __DIR__ . '/../../UrlMatchException.php';
+require '../../vendor/autoload.php';
 
 use Moon\Routing\Router;
 
-$router = new Router();
-$router->get('', 'SiteController::index');
-
-$router = new Router($router->getRoutes(), [
-    'namespace' => 'app\\controllers',
-    'middleware' => [
-        'csrfFilter', 'sessionStart'
+$router = new Router(null, [
+    'namespace'=>'app\\controllers',    //support controller namespace
+    'middleware'=>[                     //support middleware
+        'startSession',
+        'verifyCSRFToken',
+        'auth'
     ],
-    'prefix' => 'demo'
+    'prefix'=>''                        //support prefix
 ]);
 
-$router->get('/', function () {
-    return 'index';
+// action also can be a Closure
+$router->get('/', function(){
+    return 'Welcome ＼( ^▽^ )／';
 });
 
-$router->get('/home/{name}', 'IndexController::home');
-$router->get('/login', 'IndexController::login')->name('login');
-$router->post('/login', 'IndexController::post_login');
-
-$res = $router->any('api/{aaa}', 'ApiController::index')->middleware(['api.auth', 'api.oauth']);
-$res = $router->get('api/{version}/user/{id:\d+}', 'ApiControllers\\UserController::user')->middleware(['api.auth', 'api.oauth']);
-
-$router->group(['prefix' => 'admin/', 'middleware' => 'auth', 'namespace' => 'admin'], function (Router $router) {
-    $router->post('/login', 'AdminController::login');
+//route parameter
+$router->get('/hello/{name}', function($name){
+    return 'Hello '.$name;
 });
 
-$router->group(['prefix' => 'admin2/', 'middleware' => 'auth2', 'namespace' => 'admin2'], function (Router $router) {
-    $router->post('/login', 'Admin2Controller::login');
-    $router->group(['prefix' => 'admin3/', 'middleware' => 'auth3', 'namespace' => 'admin3'], function (Router $router) {
-        $router->post('/login', 'Admin3Controller::login');
-        $router->post('/logout', 'Admin3Controller::login');
-    });
+$router->get('/login', 'UserController::login')->name('login'); // name your route
+$router->post('login', 'UserController::post_login');
+
+//use route group
+$router->group(['prefix'=>'user'], function($router){
+    /**
+     * @var Router $router
+     */
+    $router->post('delete/{id:\d+}', 'UserController::delete'); // {param:type}
 });
 
+// match GET or POST request method
+$router->match(['get', 'post'], '/api', 'ApiController::index');
 
-$routes = $router->getRoutes();
-//var_dump(count($routes));
-echo '<table>';
-echo '<th>Name</th><th>Path</th><th>Methods</th><th>Action</th><th>Middleware</th>';
-foreach ($routes as $route) {
-    /** @var \Moon\Routing\Route $route */
-    //var_dump($route->getName().'|'.$route->getPath().'|'.json_encode($route->getMethods()).'|'.json_encode($route->getMiddleware()));
-    echo '<tr>';
-    echo '<td>' . $route->getName() . '</td>';
-    echo '<td>' . $route->getPath() . '</td>';
-    echo '<td>' . json_encode($route->getMethods()) . '</td>';
-    echo '<td>' . json_encode($route->getAction()) . '</td>';
-    echo '<td>' . json_encode($route->getMiddleware()) . '</td>';
-    echo '</tr>';
-}
-echo '</table>';
+// match all request method
+$router->any('/other', 'ApiController::other');
 
-echo '<hr>Memory used: ' . (memory_get_usage() / 1024) . 'KB<br>';
-echo 'Time used: ' . (microtime(true) - $start_time) . 's<br>';
+echo '<pre>';
+var_dump($router->getRoutes());
 
-echo '<hr>$_SERVER[\'REQUEST_URI\']: ' . $_SERVER['REQUEST_URI'] . '<br>';
-echo '$_SERVER[\'PHP_SELF\']: ' . $_SERVER['PHP_SELF'] . '<br>';
-echo '$_SERVER[\'SCRIPT_NAME\']: ' . $_SERVER['SCRIPT_NAME'] . '<br>';
+
+/**
+ * match request
+ */
+
+echo '$_SERVER[\'REQUEST_URI\']: ' . $_SERVER['REQUEST_URI'].PHP_EOL;
+echo '$_SERVER[\'PHP_SELF\']: ' . $_SERVER['PHP_SELF'].PHP_EOL;
+echo '$_SERVER[\'SCRIPT_NAME\']: ' . $_SERVER['SCRIPT_NAME'].PHP_EOL;
 
 $uri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
 $path = substr($uri, -(strlen($uri) - strlen(dirname($_SERVER['SCRIPT_NAME']))));
 $path = str_replace('//', '/', '/' . $path);
 $method = $_SERVER['REQUEST_METHOD'];
 
-echo 'path: '.$path.'<br>';
-echo 'method: '.$method.'<br>';
+echo 'path: '.$path.PHP_EOL;
+echo 'method: '.$method.PHP_EOL;
 
-echo '<hr>Memory used: ' . (memory_get_usage() / 1024) . 'KB<br>';
-echo 'Time used: ' . (microtime(true) - $start_time) . 's<br>';
-
+/**
+ * return [
+ *   'route' => $route,  // Route
+ *   'params' => $params // array
+ * ];
+ *
+ */
 $res = $router->dispatch($path, $method);
-echo '<hr>';
-var_dump($res);
 
-echo '<hr>Memory used: ' . (memory_get_usage() / 1024) . 'KB<br>';
-echo 'Time used: ' . (microtime(true) - $start_time) . 's<br>';
+var_dump($res);

@@ -1,5 +1,5 @@
 # routing
-A routing use "symfony/routing" and like "laravel/routing" style
+A routing like "laravel/routing" style
 
 To install it via `composer`
 
@@ -10,10 +10,10 @@ composer require heropoo/routing
 ### example:
 ```php
 <?php
-require '../vendor/autoload.php';
+
+require_once './vendor/autoload.php';
 
 use Moon\Routing\Router;
-
 
 $router = new Router(null, [
     'namespace'=>'app\\controllers',    //support controller namespace
@@ -33,20 +33,20 @@ $router->get('/', function(){
 //route parameter
 $router->get('/hello/{name}', function($name){
     return 'Hello '.$name;
-})->setRequirement('name', '([\w\s\x{4e00}-\x{9fa5}]+)?');  //  Perform a regular expression match
+});
 
 $router->get('/login', 'UserController::login')->name('login'); // name your route
-$router->post('/login', 'UserController::post_login');
+$router->post('login', 'UserController::post_login');
 
-//use route group 
+//use route group
 $router->group(['prefix'=>'user'], function($router){
     /**
      * @var Router $router
      */
-    $router->post('delete/{id}', 'UserController::delete');
+    $router->post('delete/{id:\d+}', 'UserController::delete'); // {param:type}
 });
 
-// match GET or POST request method 
+// match GET or POST request method
 $router->match(['get', 'post'], '/api', 'ApiController::index');
 
 // match all request method
@@ -59,21 +59,29 @@ var_dump($router->getRoutes());
 /**
  * match request
  */
-$request = \Symfony\Component\HttpFoundation\Request::createFromGlobals();
 
-$path_info = $request->getPathInfo();
+echo '$_SERVER[\'REQUEST_URI\']: ' . $_SERVER['REQUEST_URI'].PHP_EOL;
+echo '$_SERVER[\'PHP_SELF\']: ' . $_SERVER['PHP_SELF'].PHP_EOL;
+echo '$_SERVER[\'SCRIPT_NAME\']: ' . $_SERVER['SCRIPT_NAME'].PHP_EOL;
 
-echo '<hr>'.$path_info.'<hr>';
+$uri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
+$path = substr($uri, -(strlen($uri) - strlen(dirname($_SERVER['SCRIPT_NAME']))));
+$path = str_replace('//', '/', '/' . $path);
+$method = $_SERVER['REQUEST_METHOD'];
 
-$context = new \Symfony\Component\Routing\RequestContext();
-$context->fromRequest($request);
+echo 'path: '.$path.PHP_EOL;
+echo 'method: '.$method.PHP_EOL;
 
-//match
-$matcher = new \Symfony\Component\Routing\Matcher\UrlMatcher($routes, $context);
-$parameters = $matcher->match($path_info);
+/**
+ * return [
+ *   'route' => $route,  // Route
+ *   'params' => $params // array
+ * ];
+ *
+ */
+$res = $router->dispatch($path, $method);
 
-//match request
-var_dump($parameters);
+var_dump($res);
 
 ```
 
