@@ -72,8 +72,8 @@ class Router
      */
     public function match($methods, $path, $action)
     {
-        array_walk($methods, function ($method) {
-            return strtoupper($method);
+        $res = array_walk($methods, function (&$method) {
+            $method = strtoupper($method);
         });
         return $this->addRoute($path, $methods, $action);
     }
