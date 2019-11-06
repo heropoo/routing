@@ -117,7 +117,8 @@ class Router
         $path = str_replace('//', '/', $path);
 
         if (!$action instanceof \Closure && isset($this->attributes['namespace'])) {
-            $action = '\\' . trim($this->attributes['namespace'] . '\\' . trim($action, '\\'), '\\');
+            $action = "\\" . trim($this->attributes['namespace'] . "\\" . trim($action, "\\"), "\\");
+            $action = str_replace('\\\\', '\\', $action);
         }
 
         $route = new Route([
