@@ -3,6 +3,10 @@ A routing like "laravel/routing" style
 
 [中文说明](./README_CN.md)
 
+[![Latest Stable Version](https://poser.pugx.org/heropoo/routing/v/stable)](https://packagist.org/packages/heropoo/routing)
+[![Total Downloads](https://poser.pugx.org/heropoo/routing/downloads)](https://packagist.org/packages/heropoo/routing)
+[![License](https://poser.pugx.org/heropoo/routing/license)](https://packagist.org/packages/heropoo/routing)
+
 To install it via `composer`
 
 ```shell
