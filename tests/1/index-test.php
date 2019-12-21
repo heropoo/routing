@@ -23,7 +23,7 @@ $router = new Router($router->getRoutes(), [
     'middleware' => [
         'csrfFilter', 'sessionStart'
     ],
-    'prefix' => 'demo'
+    'prefix' => ''
 ]);
 
 $router->get('/', function () {
@@ -43,11 +43,13 @@ $router->group(['prefix' => 'admin/', 'middleware' => 'auth', 'namespace' => 'ad
 
 $router->group(['prefix' => 'admin2/', 'middleware' => 'auth2', 'namespace' => 'admin2'], function (Router $router) {
     $router->post('/login', 'Admin2Controller::login');
-    $router->group(['prefix' => 'admin3/', 'middleware' => 'auth3', 'namespace' => 'admin3'], function (Router $router) {
+    $router->group(['prefix' => 'api/', 'middleware' => 'auth3', 'namespace' => 'api'], function (Router $router) {
         $router->post('/login', 'Admin3Controller::login');
         $router->post('/logout', 'Admin3Controller::login');
     });
 });
+
+$router->get('/test/{name}', 'TestController::home');
 
 
 $routes = $router->getRoutes();

@@ -1,5 +1,5 @@
 # routing
-一个简单的路由用法和"laravel/routing"一样简单
+一个简单快速的路由
 
 [README](./README.md)
 
@@ -9,7 +9,13 @@
 composer require heropoo/routing
 ```
 
-### example:
+## 特性
+- 支持restful风格路由
+- 支持路由组以及给组定义各种属性（例如：控制器命名空间、中间件、前缀等）
+- 支持路由参数以及参数类型限制
+- 支持正则表单式 
+
+## example:
 ```php
 <?php
 

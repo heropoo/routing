@@ -1,15 +1,22 @@
 # routing
-A routing like "laravel/routing" style
+A simple and fast route
 
 [中文说明](./README_CN.md)
 
+## install
 To install it via `composer`
 
 ```shell
 composer require heropoo/routing
 ```
 
-### example:
+## feature
+- support restful style route
+- support route group and add some attributes (like namespace,middleware,prefix..)
+- support route params and limit param's type
+- support regex
+
+## example:
 ```php
 <?php
 

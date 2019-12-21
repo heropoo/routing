@@ -94,10 +94,17 @@ class Router
      */
     public function group($attributes, \Closure $callback)
     {
-        $router = clone $this;
-        $router->mergeAttributes($attributes);
-        $callback($router);
-        unset($router);
+//        $router = clone $this;
+//        $router->mergeAttributes($attributes);
+//        $callback($router);
+//        unset($router);
+
+        //Same effect as above
+
+        $preAttributes = $this->attributes;
+        $this->mergeAttributes($attributes);
+        $callback($this);
+        $this->attributes = $preAttributes;
     }
 
     /**
@@ -109,7 +116,6 @@ class Router
     public function createRoute($path, $methods, $action)
     {
         if (isset($this->attributes['prefix'])) {
-//            $path = rtrim($this->attributes['prefix'] . '/' . trim($path, '/'), '/');
             $path = $this->attributes['prefix'] . '/' . $path;
         }
 
