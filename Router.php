@@ -72,9 +72,15 @@ class Router
      */
     public function match($methods, $path, $action)
     {
-        $res = array_walk($methods, function (&$method) {
-            $method = strtoupper($method);
-        });
+//        $res = array_walk($methods, function (&$method) {
+//            $method = strtoupper($method);
+//        });
+
+        //Same effect as above
+
+        $methods = array_map(function ($method) {
+            return strtoupper($method);
+        }, $methods);
         return $this->addRoute($path, $methods, $action);
     }
 
@@ -198,6 +204,33 @@ class Router
         return $this->routes->get($name);
     }
 
+    public function parseToTree()
+    {
+        $tree = [];
+        foreach ($this->routes as $route) {
+            /** @var Route $route */
+            $path = $route->getPath();
+            $pathArr = explode('/', $path);
+            unset($pathArr[0]);
+            $node = $pathArr[1];
+            $tree[$node] = $this->parseNode($pathArr, $route);
+        }
+        return $tree;
+    }
+
+    protected function parseNode($pathArr, Route $route)
+    {
+        array_values($pathArr);
+        $node = array_pop($pathArr);
+
+        if (empty($pathArr)) {
+            return $route;
+        } else {
+            $tree[$node] = $this->parseNode($pathArr, $route);
+        }
+        return $tree;
+    }
+
     /**
      * Dispatch
      * @param string $path
@@ -207,9 +240,9 @@ class Router
      */
     public function dispatch($path, $method)
     {
-        foreach ($this->getRoutes() as $route) {
+        foreach ($this->routes as $route) {
+            /** @var Route $route */
             if (in_array($method, $route->getMethods())) {
-                /** @var Route $route */
                 $pattern = "#^{$route->getPath()}$#U";
                 $param_keys = [];
                 if ($res = preg_match_all("#({.*?})#", $route->getPath(), $matches)) {
