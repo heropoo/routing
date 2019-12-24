@@ -129,7 +129,7 @@ class Router
         $path = str_replace('//', '/', $path);
 
         if ($action instanceof \Closure) {
-            $action->bindTo(null); // not bind $this
+            $action = $action->bindTo(null, null); // not bind $this
         } else if (isset($this->attributes['namespace'])) {
             $action = "\\" . trim($this->attributes['namespace'] . "\\" . trim($action, "\\"), "\\");
             $action = str_replace('\\\\', '\\', $action);
