@@ -72,9 +72,15 @@ class Router
      */
     public function match($methods, $path, $action)
     {
-        $res = array_walk($methods, function (&$method) {
-            $method = strtoupper($method);
-        });
+//        $res = array_walk($methods, function (&$method) {
+//            $method = strtoupper($method);
+//        });
+
+        //Same effect as above
+
+        $methods = array_map(function ($method) {
+            return strtoupper($method);
+        }, $methods);
         return $this->addRoute($path, $methods, $action);
     }
 
@@ -122,7 +128,9 @@ class Router
         $path = strpos($path, '/') === 0 ? $path : '/' . $path;
         $path = str_replace('//', '/', $path);
 
-        if (!$action instanceof \Closure && isset($this->attributes['namespace'])) {
+        if ($action instanceof \Closure) {
+            $action->bindTo(null); // not bind $this
+        } else if (isset($this->attributes['namespace'])) {
             $action = "\\" . trim($this->attributes['namespace'] . "\\" . trim($action, "\\"), "\\");
             $action = str_replace('\\\\', '\\', $action);
         }
