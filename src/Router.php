@@ -25,7 +25,8 @@ class Router
      *
      * @var array
      */
-    const VERBS = ['GET', 'HEAD', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'];
+    //const VERBS = ['GET', 'HEAD', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS']; // php version >= 5.6
+    public static $verbs = ['GET', 'HEAD', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'];
 
     /**
      * @var RouteCollection
@@ -91,7 +92,7 @@ class Router
      */
     public function any($path, $action)
     {
-        return $this->addRoute($path, static::VERBS, $action);
+        return $this->addRoute($path, static::$verbs, $action);
     }
 
     /**
@@ -128,7 +129,9 @@ class Router
         $path = strpos($path, '/') === 0 ? $path : '/' . $path;
         $path = str_replace('//', '/', $path);
 
-        if (!$action instanceof \Closure && isset($this->attributes['namespace'])) {
+        if ($action instanceof \Closure) {
+            $action = $action->bindTo(null, null); // not bind $this
+        } else if (isset($this->attributes['namespace'])) {
             $action = "\\" . trim($this->attributes['namespace'] . "\\" . trim($action, "\\"), "\\");
             $action = str_replace('\\\\', '\\', $action);
         }
@@ -204,33 +207,6 @@ class Router
         return $this->routes->get($name);
     }
 
-    public function parseToTree()
-    {
-        $tree = [];
-        foreach ($this->routes as $route) {
-            /** @var Route $route */
-            $path = $route->getPath();
-            $pathArr = explode('/', $path);
-            unset($pathArr[0]);
-            $node = $pathArr[1];
-            $tree[$node] = $this->parseNode($pathArr, $route);
-        }
-        return $tree;
-    }
-
-    protected function parseNode($pathArr, Route $route)
-    {
-        array_values($pathArr);
-        $node = array_pop($pathArr);
-
-        if (empty($pathArr)) {
-            return $route;
-        } else {
-            $tree[$node] = $this->parseNode($pathArr, $route);
-        }
-        return $tree;
-    }
-
     /**
      * Dispatch
      * @param string $path
@@ -240,9 +216,9 @@ class Router
      */
     public function dispatch($path, $method)
     {
-        foreach ($this->routes as $route) {
-            /** @var Route $route */
+        foreach ($this->getRoutes() as $route) {
             if (in_array($method, $route->getMethods())) {
+                /** @var Route $route */
                 $pattern = "#^{$route->getPath()}$#U";
                 $param_keys = [];
                 if ($res = preg_match_all("#({.*?})#", $route->getPath(), $matches)) {
@@ -272,10 +248,37 @@ class Router
         throw new UrlMatchException('No Route Matched for path: "' . $path . '"', 404);
     }
 
+    public function parseToTree()
+    {
+        $tree = [];
+        foreach ($this->routes as $route) {
+            /** @var Route $route */
+            $path = $route->getPath();
+            $pathArr = explode('/', $path);
+            unset($pathArr[0]);
+            $node = $pathArr[1];
+            $tree[$node] = $this->parseNode($pathArr, $route);
+        }
+        return $tree;
+    }
+
+    protected function parseNode($pathArr, Route $route)
+    {
+        array_values($pathArr);
+        $node = array_pop($pathArr);
+
+        if (empty($pathArr)) {
+            return $route;
+        } else {
+            $tree[$node] = $this->parseNode($pathArr, $route);
+        }
+        return $tree;
+    }
+
     public function __call($name, $arguments)
     {
         $method = strtoupper($name);
-        if (in_array($method, static::VERBS)) {
+        if (in_array($method, static::$verbs)) {
             if (count($arguments) < 2) {
                 throw new \InvalidArgumentException('Too few arguments to function ' . get_class($this) . '::' . $name . '()');
             }

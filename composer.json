@@ -1,6 +1,6 @@
 {
   "name": "heropoo/routing",
-  "description": "A routing like \"laravel/routing\" style",
+  "description": "A simple and fast route",
   "type": "library",
   "license": "MIT",
   "authors": [
@@ -9,10 +9,18 @@
       "email": "aiyouyou1000@163.com"
     }
   ],
-  "require": {},
+  "keywords": [
+      "routing", "route", "router"
+  ],
+  "require": {
+    "php": ">=5.4"
+  },
+  "require-dev": {
+    "phpunit/phpunit": "^4.8.36|^7.5.18"
+  },
   "autoload": {
     "psr-4": {
-      "Moon\\Routing\\": ""
+      "Moon\\Routing\\": "src/"
     }
   }
 }

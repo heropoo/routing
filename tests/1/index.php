@@ -48,7 +48,7 @@ $router->match(['get', 'post'], '/api', 'ApiController::index');
 $router->any('/other', 'ApiController::other');
 
 echo '<pre>';
-//var_dump($router->getRoutes());
+//var_dump($router->getRoutes());exit;
 
 
 /**
