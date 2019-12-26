@@ -10,6 +10,7 @@ namespace Moon\Routing;
 class RouteCollection implements \Countable, \IteratorAggregate
 {
     protected $items = [];
+    protected $names = [];
 
     public function count()
     {
@@ -29,6 +30,13 @@ class RouteCollection implements \Countable, \IteratorAggregate
     public function add($key, $value)
     {
         $this->items[$key] = $value;
+        return $this;
+    }
+
+    // todo
+    public function name($name, $key)
+    {
+        $this->names[$key] = $name;
         return $this;
     }
 }
