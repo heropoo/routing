@@ -14,10 +14,11 @@ composer require heropoo/routing
 ```
 
 ## feature
-- support restful style route
-- support route group and add some attributes (like namespace,middleware,prefix..)
-- support route params and limit param's type
-- support regex
+- Support restful style route
+- Support route group and add some attributes (like namespace,middleware,prefix..)
+- Support route params and limit param's type
+- Support regex
+- Use tree structure storage, fast matching! 
 
 ## example:
 ```php
