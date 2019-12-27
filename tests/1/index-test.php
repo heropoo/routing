@@ -8,23 +8,20 @@ $start_time = microtime(true);
 
 ini_set('display_errors', 'On');
 
-require_once __DIR__ . '/../../Route.php';
-require_once __DIR__ . '/../../Router.php';
-require_once __DIR__ . '/../../RouteCollection.php';
-require_once __DIR__ . '/../../UrlMatchException.php';
+require '../../vendor/autoload.php';
 
 use Moon\Routing\Router;
 
 $router = new Router();
 $router->get('', 'SiteController::index');
 
-$router = new Router($router->getRoutes(), [
+$router = new Router([
     'namespace' => 'app\\controllers',
     'middleware' => [
         'csrfFilter', 'sessionStart'
     ],
     'prefix' => ''
-]);
+], $router->getRoutes());
 
 $router->get('/', function () {
     return 'index';

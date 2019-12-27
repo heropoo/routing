@@ -1,7 +1,7 @@
 <?php
 /**
- * Date: 2019-09-06
- * Time: 17:57
+ * Date: 2019-12-23
+ * Time: 17:14
  */
 
 ini_set('display_errors', 'On');
@@ -20,36 +20,29 @@ $router = new Router([
     'prefix'=>''                        //support prefix
 ]);
 
-// action also can be a Closure
-$router->get('/', function(){
-    return 'Welcome ＼( ^▽^ )／';
-});
+echo '<pre>';
 
-//route parameter
-$router->get('/hello/{name}', function($name){
-    return 'Hello '.$name;
-});
+require __DIR__.'/routes.php';
+//echo '<hr>';
+var_dump($router->getRoutes()->getTree());
 
-$router->get('/login', 'UserController::login')->name('login'); // name your route
-$router->post('login', 'UserController::post_login');
-
-//use route group
-$router->group(['prefix'=>'user'], function($router){
-    /**
-     * @var Router $router
-     */
-    $router->post('delete/{id:\d+}', 'UserController::delete'); // {param:type}
-});
-
-// match GET or POST request method
-$router->match(['get', 'post'], '/api', 'ApiController::index');
-
-// match all request method
-$router->any('/other', 'ApiController::other');
+//$routes = $router->getRoutes();
+////var_dump($routes);
+//echo '<table>';
+//echo '<th>Name</th><th>Path</th><th>Methods</th><th>Action</th><th>Middleware</th>';
+//foreach ($routes as $route) {
+//    /** @var \Moon\Routing\Route $route */
+//    echo '<tr>';
+//    echo '<td>' . $route->getName() . '</td>';
+//    echo '<td>' . $route->getPath() . '</td>';
+//    echo '<td>' . json_encode($route->getMethods()) . '</td>';
+//    echo '<td>' . json_encode($route->getAction()) . '</td>';
+//    echo '<td>' . json_encode($route->getMiddleware()) . '</td>';
+//    echo '</tr>';
+//}
+//echo '</table>';
 
 echo '<pre>';
-//var_dump($router->getRoutes());exit;
-
 
 /**
  * match request
@@ -74,6 +67,9 @@ echo 'method: '.$method.PHP_EOL;
  * ];
  *
  */
-$res = $router->dispatch($path, $method);
+//$res = $router->dispatch($path, $method);
 
+$res = $router->dispatch($path, $method);
 var_dump($res);
+
+//todo cache routes and tree

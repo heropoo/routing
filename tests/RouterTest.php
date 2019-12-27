@@ -20,8 +20,8 @@ class RouterTest extends TestCase
 
     public function testRouter()
     {
-        var_dump(__METHOD__);
-        $router = new Router(null, [
+//        print(__METHOD__.PHP_EOL);
+        $router = new Router([
             'namespace' => 'app\\controllers',    //support controller namespace
             'middleware' => [                     //support middleware
                 'startSession',
@@ -43,7 +43,7 @@ class RouterTest extends TestCase
      */
     public function testRouterAdd(Router $router)
     {
-        var_dump(__METHOD__);
+//        print(__METHOD__.PHP_EOL);
 
         $router->get('closure', function () {
             return $_SERVER['REQUEST_METHOD'] . ' test';

@@ -27,7 +27,7 @@ require_once './vendor/autoload.php';
 
 use Moon\Routing\Router;
 
-$router = new Router(null, [
+$router = new Router([
     'namespace'=>'app\\controllers',    //支持控制器命名空间
     'middleware'=>[                     //支持中间件
         'startSession',
