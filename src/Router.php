@@ -43,7 +43,7 @@ class Router
      * @param RouteCollection|null $routes
      * @param array $attributes
      */
-    public function __construct(RouteCollection $routes = null, array $attributes = [])
+    public function __construct(array $attributes = [], RouteCollection $routes = null)
     {
         $this->routes = $routes ? $routes : new RouteCollection();
         $this->attributes = $attributes;

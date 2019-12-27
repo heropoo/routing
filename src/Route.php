@@ -17,7 +17,7 @@ namespace Moon\Routing;
  * @method array getMiddleware()
  * @package Moon\Routing
  */
-class Route
+class Route implements \Serializable
 {
     public function __construct(array $attributes)
     {
@@ -86,5 +86,15 @@ class Route
             }
         }
         throw new \BadMethodCallException('Call to undefined method ' . get_class($this) . '::' . $name . '()');
+    }
+
+    public function serialize()
+    {
+        //return $this->
+    }
+
+    public function unserialize($serialized)
+    {
+
     }
 }
