@@ -229,7 +229,9 @@ class Router
 
         $pathMatchedRoute = false;
         if (is_array($value) && isset($value[0])) {
-            foreach ($value as $route) {
+            for ($i = 0; $i < count($value); $i++) {
+                $route = isset($value[$i]) ? $value[$i] : null;
+                //var_dump($route);exit;
                 if ($route instanceof Route) {
                     if (in_array($method, $route->getMethods())) {
                         return [

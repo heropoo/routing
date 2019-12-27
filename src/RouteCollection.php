@@ -63,7 +63,11 @@ class RouteCollection implements \Countable, \IteratorAggregate
         if ($hasRegex) {
             $this->tree['regex'][$route->getName()] = $route;
         } else {
-            $this->tree['full'][$node][] = $res;
+            if ($res instanceof Route) {
+                $this->tree['full'][$node][] = $res;
+            } else {
+                $this->tree['full'][$node] = $res;
+            }
         }
     }
 
@@ -81,7 +85,13 @@ class RouteCollection implements \Countable, \IteratorAggregate
                 return false;
             }
 
-            $tree[$node] = $this->parseNode($pathArr, $route, $hasRegex);
+            //$tree[$node] = $this->parseNode($pathArr, $route, $hasRegex);
+            $res = $this->parseNode($pathArr, $route, $hasRegex);
+            if($res instanceof Route){
+                $tree[$node][] = $this->parseNode($pathArr, $route, $hasRegex);
+            }else{
+                $tree[$node] = $this->parseNode($pathArr, $route, $hasRegex);
+            }
         }
         return $tree;
     }
