@@ -33,9 +33,6 @@ class Router
      */
     protected $routes;
 
-    /**
-     * @var array
-     */
     protected $attributes = [];
 
     /**
@@ -162,6 +159,7 @@ class Router
         $name = implode('.', $route->getMethods()) . ':' . $route->getPath();
         $route->name($name);
         $this->routes->add($name, $route);
+
         return $route;
     }
 
@@ -208,7 +206,7 @@ class Router
     }
 
     /**
-     * Dispatch
+     * Dispatch by Tree
      * @param string $path
      * @param string $method
      * @return array
@@ -216,9 +214,56 @@ class Router
      */
     public function dispatch($path, $method)
     {
-        foreach ($this->getRoutes() as $route) {
+        $pathArr = explode('/', $path);
+        unset($pathArr[0]);
+
+        $value = $this->routes->getTree()['full'];
+        for ($i = 1; $i <= count($pathArr); $i++) {
+            $k = $pathArr[$i];
+            if (!isset($value[$k])) {
+                $value = false;
+                break;
+            }
+            $value = $value[$k];
+        }
+
+        $pathMatchedRoute = false;
+        if (is_array($value) && isset($value[0])) {
+            foreach ($value as $route) {
+                if ($route instanceof Route) {
+                    if (in_array($method, $route->getMethods())) {
+                        return [
+                            'route' => $route,
+                            'params' => [],
+                            'match_by_tree' => true // for debug
+                        ];
+                    } else {
+                        $pathMatchedRoute = $route;
+                    }
+                }
+            }
+        }
+
+        if ($pathMatchedRoute) {
+            throw new UrlMatchException('Method not allow for path: "' . $path . '"', 405);
+        }
+
+        // fall back to regex match
+        return $this->dispatchRegex($path, $method);
+    }
+
+    /**
+     * Dispatch regex
+     * @param string $path
+     * @param string $method
+     * @return array
+     * @throws UrlMatchException
+     */
+    protected function dispatchRegex($path, $method)
+    {
+        foreach ($this->routes->getTree()['regex'] as $route) {
+            /** @var Route $route */
             if (in_array($method, $route->getMethods())) {
-                /** @var Route $route */
                 $pattern = "#^{$route->getPath()}$#U";
                 $param_keys = [];
                 if ($res = preg_match_all("#({.*?})#", $route->getPath(), $matches)) {
