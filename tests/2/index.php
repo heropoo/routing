@@ -20,23 +20,27 @@ $router = new Router(null, [
     'prefix'=>''                        //support prefix
 ]);
 
-require __DIR__.'/routes.php';
+echo '<pre>';
 
-$routes = $router->getRoutes();
-//var_dump($routes);
-echo '<table>';
-echo '<th>Name</th><th>Path</th><th>Methods</th><th>Action</th><th>Middleware</th>';
-foreach ($routes as $route) {
-    /** @var \Moon\Routing\Route $route */
-    echo '<tr>';
-    echo '<td>' . $route->getName() . '</td>';
-    echo '<td>' . $route->getPath() . '</td>';
-    echo '<td>' . json_encode($route->getMethods()) . '</td>';
-    echo '<td>' . json_encode($route->getAction()) . '</td>';
-    echo '<td>' . json_encode($route->getMiddleware()) . '</td>';
-    echo '</tr>';
-}
-echo '</table>';
+require __DIR__.'/routes.php';
+//echo '<hr>';
+var_dump($router->getRoutes()->getTree());
+
+//$routes = $router->getRoutes();
+////var_dump($routes);
+//echo '<table>';
+//echo '<th>Name</th><th>Path</th><th>Methods</th><th>Action</th><th>Middleware</th>';
+//foreach ($routes as $route) {
+//    /** @var \Moon\Routing\Route $route */
+//    echo '<tr>';
+//    echo '<td>' . $route->getName() . '</td>';
+//    echo '<td>' . $route->getPath() . '</td>';
+//    echo '<td>' . json_encode($route->getMethods()) . '</td>';
+//    echo '<td>' . json_encode($route->getAction()) . '</td>';
+//    echo '<td>' . json_encode($route->getMiddleware()) . '</td>';
+//    echo '</tr>';
+//}
+//echo '</table>';
 
 echo '<pre>';
 
@@ -56,8 +60,6 @@ $method = $_SERVER['REQUEST_METHOD'];
 echo 'path: '.$path.PHP_EOL;
 echo 'method: '.$method.PHP_EOL;
 
-//var_dump($router->parseToTree());exit;
-
 /**
  * return [
  *   'route' => $route,  // Route
@@ -67,9 +69,7 @@ echo 'method: '.$method.PHP_EOL;
  */
 //$res = $router->dispatch($path, $method);
 
-//var_dump($res);
-$tree = $router->parseToTree();
-//var_dump($tree);
+$res = $router->dispatch($path, $method);
+var_dump($res);
 
-//todo quick match by tree
 //todo cache routes and tree
