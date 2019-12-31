@@ -66,11 +66,6 @@ $router->any('/other', 'ApiController::other');
 // get all routes
 var_dump($router->getRoutes());
 
-
-/**
- * 
- */
-
 /**
  * match request
  * @param string $path Request path, eg： /user/list
