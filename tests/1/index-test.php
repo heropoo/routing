@@ -9,6 +9,7 @@ $start_time = microtime(true);
 ini_set('display_errors', 'On');
 
 require '../../vendor/autoload.php';
+require_once __DIR__ . '/TestController.php';
 
 use Moon\Routing\Router;
 
@@ -28,7 +29,7 @@ $router->get('/', function () {
 });
 
 $router->get('/home/{name}', 'IndexController::home');
-$router->get('/login', 'IndexController::login')->name('login');
+$router->get('/login', 'IndexController::login', 'login');
 $router->post('/login', 'IndexController::post_login');
 
 $res = $router->any('api/{aaa}', 'ApiController::index')->middleware(['api.auth', 'api.oauth']);
@@ -47,6 +48,7 @@ $router->group(['prefix' => 'admin2/', 'middleware' => 'auth2', 'namespace' => '
 });
 
 $router->get('/test/{name}', 'TestController::home');
+$router->controller('test', 'TestController');
 
 
 $routes = $router->getRoutes();
@@ -77,8 +79,8 @@ $path = substr($uri, -(strlen($uri) - strlen(dirname($_SERVER['SCRIPT_NAME']))))
 $path = str_replace('//', '/', '/' . $path);
 $method = $_SERVER['REQUEST_METHOD'];
 
-echo 'path: '.$path.'<br>';
-echo 'method: '.$method.'<br>';
+echo 'path: ' . $path . '<br>';
+echo 'method: ' . $method . '<br>';
 
 echo '<hr>Memory used: ' . (memory_get_usage() / 1024) . 'KB<br>';
 echo 'Time used: ' . (microtime(true) - $start_time) . 's<br>';

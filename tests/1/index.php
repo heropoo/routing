@@ -30,7 +30,7 @@ $router->get('/hello/{name}', function($name){
     return 'Hello '.$name;
 });
 
-$router->get('/login', 'UserController::login')->name('login'); // name your route
+$router->get('/login', 'UserController::login', 'login'); // name your route
 $router->post('login', 'UserController::post_login');
 
 //use route group
