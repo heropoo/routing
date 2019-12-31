@@ -27,6 +27,7 @@ composer require heropoo/routing
 require_once './vendor/autoload.php';
 
 use Moon\Routing\Router;
+use Moon\Routing\UrlMatchException;
 
 $router = new Router([
     'namespace'=>'app\\controllers',    //支持控制器命名空间
@@ -44,7 +45,7 @@ $router->get('/', function(){
 });
 
 //支持路由参数
-$router->get('/hello/{name}', function($name){
+$router->get('/hello/{name}', function($name){ //自动匹配路由参数赋予匿名函数
     return 'Hello '.$name;
 });
 
@@ -52,41 +53,24 @@ $router->get('/login', 'UserController::login')->name('login'); // 支持给你�
 $router->post('login', 'UserController::post_login');
 
 //支持路由组
-$router->group(['prefix'=>'user'], function($router){
-    /**
-     * @var Router $router
-     */
+$router->group(['prefix'=>'user'], function(Router $router){
     $router->post('delete/{id:\d+}', 'UserController::delete'); //路由参数 支持正则类型 {param:type}
 });
 
-// match GET or POST request method
+// 匹配指定的http请求方法，如： GET or POST
 $router->match(['get', 'post'], '/api', 'ApiController::index');
 
-// match all request method
+// 匹配所有的http请求方法
 $router->any('/other', 'ApiController::other');
 
-echo '<pre>';
+// 获取所有路由
 var_dump($router->getRoutes());
-
 
 /**
  * 匹配请求
- */
-
-echo '$_SERVER[\'REQUEST_URI\']: ' . $_SERVER['REQUEST_URI'].PHP_EOL;
-echo '$_SERVER[\'PHP_SELF\']: ' . $_SERVER['PHP_SELF'].PHP_EOL;
-echo '$_SERVER[\'SCRIPT_NAME\']: ' . $_SERVER['SCRIPT_NAME'].PHP_EOL;
-
-$uri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
-$path = substr($uri, -(strlen($uri) - strlen(dirname($_SERVER['SCRIPT_NAME']))));
-$path = str_replace('//', '/', '/' . $path);
-$method = $_SERVER['REQUEST_METHOD'];
-
-echo 'path: '.$path.PHP_EOL;
-echo 'method: '.$method.PHP_EOL;
-
-/**
- * 匹配到返回一个数组, 匹配不到抛出一个异常 UrlMatchException
+ * @param string $path 请求路径 如： /user/list
+ * @param string $method 请求方法 'GET', 'HEAD', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS''GET', 'HEAD', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'
+ * @return array 匹配到返回一个数组, 匹配不到抛出一个异常 UrlMatchException
  * return [
  *   'route' => $route,  // Route 对象
  *   'params' => $params // array 路由参数
@@ -94,8 +78,6 @@ echo 'method: '.$method.PHP_EOL;
  *
  */
 $res = $router->dispatch($path, $method);
-
-var_dump($res);
 
 // 该有的都有了,调用你的控制器吧
 

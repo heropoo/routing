@@ -27,6 +27,7 @@ composer require heropoo/routing
 require_once './vendor/autoload.php';
 
 use Moon\Routing\Router;
+use Moon\Routing\UrlMatchException;
 
 $router = new Router([
     'namespace'=>'app\\controllers',    //support controller namespace
@@ -44,7 +45,7 @@ $router->get('/', function(){
 });
 
 //route parameter
-$router->get('/hello/{name}', function($name){
+$router->get('/hello/{name}', function($name){ // auto pick route param to Closure 
     return 'Hello '.$name;
 });
 
@@ -52,11 +53,8 @@ $router->get('/login', 'UserController::login')->name('login'); // name your rou
 $router->post('login', 'UserController::post_login');
 
 //use route group
-$router->group(['prefix'=>'user'], function($router){
-    /**
-     * @var Router $router
-     */
-    $router->post('delete/{id:\d+}', 'UserController::delete'); // {param:type}
+$router->group(['prefix'=>'user'], function(Router $router){
+    $router->post('delete/{id:\d+}', 'UserController::delete'); // {param:type pattern}
 });
 
 // match GET or POST request method
@@ -65,27 +63,19 @@ $router->match(['get', 'post'], '/api', 'ApiController::index');
 // match all request method
 $router->any('/other', 'ApiController::other');
 
-echo '<pre>';
+// get all routes
 var_dump($router->getRoutes());
 
 
 /**
- * match request
+ * 
  */
 
-echo '$_SERVER[\'REQUEST_URI\']: ' . $_SERVER['REQUEST_URI'].PHP_EOL;
-echo '$_SERVER[\'PHP_SELF\']: ' . $_SERVER['PHP_SELF'].PHP_EOL;
-echo '$_SERVER[\'SCRIPT_NAME\']: ' . $_SERVER['SCRIPT_NAME'].PHP_EOL;
-
-$uri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
-$path = substr($uri, -(strlen($uri) - strlen(dirname($_SERVER['SCRIPT_NAME']))));
-$path = str_replace('//', '/', '/' . $path);
-$method = $_SERVER['REQUEST_METHOD'];
-
-echo 'path: '.$path.PHP_EOL;
-echo 'method: '.$method.PHP_EOL;
-
 /**
+ * match request
+ * @param string $path Request path, eg： /user/list
+ * @param string $method Request method, 'GET', 'HEAD', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS''GET', 'HEAD', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'
+ * @return array If not matched throw a UrlMatchException
  * return [
  *   'route' => $route,  // Route
  *   'params' => $params // array
