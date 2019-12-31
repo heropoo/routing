@@ -1,5 +1,5 @@
 # routing
-A simple and fast route
+A simple and fast route.Use tree structure storage, fast matching! 一个简单快速的路由，使用树形结构存储匹配更快！
 
 [中文说明](./README_CN.md)
 
