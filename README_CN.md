@@ -49,7 +49,7 @@ $router->get('/hello/{name}', function($name){ //自动匹配路由参数赋予�
     return 'Hello '.$name;
 });
 
-$router->get('/login', 'UserController::login')->name('login'); // 支持给你的路由自定义名称
+$router->get('/login', 'UserController::login', 'login'); // 支持给你的路由自定义名称
 $router->post('login', 'UserController::post_login');
 
 //支持路由组
