@@ -9,13 +9,13 @@ namespace Moon\Routing;
 
 /**
  * Class Router
- * @method Route get(string $path, string|\Closure $action)
- * @method Route head(string $path, string|\Closure $action)
- * @method Route post(string $path, string|\Closure $action)
- * @method Route put(string $path, string|\Closure $action)
- * @method Route patch(string $path, string|\Closure $action)
- * @method Route delete(string $path, string|\Closure $action)
- * @method Route options(string $path, string|\Closure $action)
+ * @method Route get(string $path, string|\Closure $action, string $name = null)
+ * @method Route head(string $path, string|\Closure $action, string $name = null)
+ * @method Route post(string $path, string|\Closure $action, string $name = null)
+ * @method Route put(string $path, string|\Closure $action, string $name = null)
+ * @method Route patch(string $path, string|\Closure $action, string $name = null)
+ * @method Route delete(string $path, string|\Closure $action, string $name = null)
+ * @method Route options(string $path, string|\Closure $action, string $name = null)
  * @package Moon\Routing
  */
 class Router
@@ -33,7 +33,22 @@ class Router
      */
     protected $routes;
 
+    /**
+     * @var array
+     * [
+     *      'namespace'=>'app\\controllers',    //support controller namespace
+     *      'middleware'=>[                     //support middleware
+     *          'startSession',
+     *           'verifyCSRFToken',
+     *           'auth'
+     *      ],
+     *      'prefix'=>'api'                     //support prefix
+     * ]
+     */
     protected $attributes = [];
+
+    protected $actionSeparation = '::';         //if you like laravel style you can set it '@'
+    protected $actionSuffix = 'Action';         //
 
     /**
      * Router constructor.
@@ -47,11 +62,33 @@ class Router
     }
 
     /**
+     * @param string $separation
+     * @return $this
+     */
+    public function setActionSeparation($separation)
+    {
+        $this->actionSeparation = $separation;
+        return $this;
+    }
+
+    /**
+     * @param string $suffix
+     * @return $this
+     */
+    public function setActionSuffix($suffix)
+    {
+        $this->actionSuffix = $suffix;
+        return $this;
+    }
+
+    /**
      * @param array $attributes
+     * @return $this
      */
     public function setAttributes($attributes)
     {
         $this->attributes = $attributes;
+        return $this;
     }
 
     /**
@@ -66,16 +103,11 @@ class Router
      * @param string|array $methods
      * @param string $path
      * @param string|\Closure $action
+     * @param string $name
      * @return Route
      */
-    public function match($methods, $path, $action)
+    public function match($methods, $path, $action, $name = null)
     {
-//        $res = array_walk($methods, function (&$method) {
-//            $method = strtoupper($method);
-//        });
-
-        //Same effect as above
-
         $methods = array_map(function ($method) {
             return strtoupper($method);
         }, $methods);
@@ -85,11 +117,15 @@ class Router
     /**
      * @param string $path
      * @param string|\Closure $action
+     * @param string $name
      * @return Route
      */
-    public function any($path, $action)
+    public function any($path, $action, $name = null)
     {
-        return $this->addRoute($path, static::$verbs, $action);
+        if (is_null($name)) {
+            $name = 'ANY:' . $path;
+        }
+        return $this->addRoute($path, static::$verbs, $action, $name);
     }
 
     /**
@@ -104,7 +140,6 @@ class Router
 //        unset($router);
 
         //Same effect as above
-
         $preAttributes = $this->attributes;
         $this->mergeAttributes($attributes);
         $callback($this);
@@ -150,17 +185,68 @@ class Router
      * @param string $path
      * @param string|array $methods
      * @param string|\Closure $action
+     * @param string $name
      * @return Route
      */
-    public function addRoute($path, $methods, $action)
+    public function addRoute($path, $methods, $action, $name = null)
     {
         $route = $this->createRoute($path, $methods, $action);
-        //$name = md5(implode('.', $route->getMethods()) . '.' . $route->getPath());
-        $name = implode('.', $route->getMethods()) . ':' . $route->getPath();
+        if (is_null($name)) {
+            //$name = md5(implode('.', $route->getMethods()) . '.' . $route->getPath());
+            $name = implode('.', $route->getMethods()) . ':' . $route->getPath();
+        }
         $route->name($name);
         $this->routes->add($name, $route);
 
         return $route;
+    }
+
+    /**
+     * @param string $path
+     * @param string $controller
+     */
+    public function controller($path, $controller)
+    {
+        $controllerClass = isset($this->attributes['namespace'])
+            ? $this->attributes['namespace'] . '\\' . $controller : $controller;
+        if (!class_exists($controllerClass)) {
+            throw new \InvalidArgumentException("Class $controllerClass is not found.");
+        }
+
+        $ref = new \ReflectionClass($controllerClass);
+        foreach ($ref->getMethods() as $reflectionMethod) {
+            /** @var \ReflectionMethod $reflectionMethod */
+            $name = $reflectionMethod->getName();
+            if ($reflectionMethod->isPublic()
+                && strlen($name) > strlen($this->actionSuffix)
+                && strrchr($name, $this->actionSuffix) == $this->actionSuffix
+            ) {
+                $method = substr($name, 0, -strlen($this->actionSuffix));
+                $sub_path = $this->convertUppercaseToDash($method);
+                $this->addRoute($path . '/' . $sub_path,
+                    self::$verbs, $controller . $this->actionSeparation . $name, $path . '.' . $sub_path);
+            }
+        }
+    }
+
+    public function resource($path, $controller)
+    {
+        $this->addRoute($path, ['GET'], $controller . $this->actionSeparation . 'index', $path . '.index');
+        $this->addRoute($path . '/create', ['GET'], $controller . $this->actionSeparation . 'create', $path . '.create');
+        $this->addRoute($path, ['POST'], $controller . $this->actionSeparation . 'store', $path . '.store');
+        $this->addRoute($path . '/{id}', ['GET'], $controller . $this->actionSeparation . 'show', $path . '.show');
+        $this->addRoute($path . '/{id}/edit', ['GET'], $controller . $this->actionSeparation . 'edit', $path . '.edit');
+        $this->addRoute($path . '/{id}', ['PUT', 'PATCH'], $controller . $this->actionSeparation . 'update', $path . '.update');
+        $this->addRoute($path . '/{id}', ['DELETE'], $controller . $this->actionSeparation . 'destroy', $path . '.destroy');
+    }
+
+    protected function convertUppercaseToDash($str)
+    {
+        //$str = str_replace("_", "-", $str);
+        $str = preg_replace_callback('/([A-Z]{1})/', function ($matches) {
+            return '-' . strtolower($matches[0]);
+        }, $str);
+        return ltrim($str, "-");
     }
 
     /**
@@ -312,7 +398,8 @@ class Router
             }
             $path = $arguments[0];
             $action = $arguments[1];
-            return $this->addRoute($path, $method, $action);
+            $route_name = isset($arguments[2]) ? $arguments[2] : null;
+            return $this->addRoute($path, $method, $action, $route_name);
         }
         throw new \BadMethodCallException('Call to undefined method ' . get_class($this) . '::' . $name . '()');
     }

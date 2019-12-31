@@ -6,11 +6,13 @@
 
 namespace Moon\Routing;
 
-
+/**
+ * Class RouteCollection
+ * @package Moon\Routing
+ */
 class RouteCollection implements \Countable, \IteratorAggregate
 {
     protected $items = [];
-    protected $names = [];
 
     protected $tree = ['full' => [], 'regex' => []];
 
@@ -33,13 +35,6 @@ class RouteCollection implements \Countable, \IteratorAggregate
     {
         $this->items[$key] = $value;
         $this->addToTree($value);
-        return $this;
-    }
-
-    // todo
-    public function name($name, $key)
-    {
-        $this->names[$key] = $name;
         return $this;
     }
 
@@ -79,17 +74,15 @@ class RouteCollection implements \Countable, \IteratorAggregate
         if (empty($pathArr)) {
             return $route;
         } else {
-
             if ($hasRegex || strpos($node, '{') !== false) {
                 $hasRegex = true;
                 return false;
             }
-
             //$tree[$node] = $this->parseNode($pathArr, $route, $hasRegex);
             $res = $this->parseNode($pathArr, $route, $hasRegex);
-            if($res instanceof Route){
+            if ($res instanceof Route) {
                 $tree[$node][] = $this->parseNode($pathArr, $route, $hasRegex);
-            }else{
+            } else {
                 $tree[$node] = $this->parseNode($pathArr, $route, $hasRegex);
             }
         }

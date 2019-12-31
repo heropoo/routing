@@ -1,7 +1,5 @@
 <?php
 /**
- * Created by PhpStorm.
- * User: ttt
  * Date: 2017/8/8
  * Time: 21:04
  */
@@ -17,7 +15,7 @@ namespace Moon\Routing;
  * @method array getMiddleware()
  * @package Moon\Routing
  */
-class Route implements \Serializable
+class Route
 {
     public function __construct(array $attributes)
     {
@@ -86,15 +84,5 @@ class Route implements \Serializable
             }
         }
         throw new \BadMethodCallException('Call to undefined method ' . get_class($this) . '::' . $name . '()');
-    }
-
-    public function serialize()
-    {
-        //return $this->
-    }
-
-    public function unserialize($serialized)
-    {
-
     }
 }
