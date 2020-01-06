@@ -197,7 +197,7 @@ class Router
     public function addRoute($path, $methods, $action, $name = null)
     {
         $route = $this->createRoute($path, $methods, $action, $name);
-        $this->routes->add($name, $route);
+        $this->routes->add($route->getName(), $route);
 
         return $route;
     }
