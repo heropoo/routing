@@ -28,6 +28,9 @@ class RouteCollection implements \Countable, \IteratorAggregate
 
     public function get($key)
     {
+        if (!isset($this->items[$key])) {
+            throw new \InvalidArgumentException("The route named '$key' is not defined.");
+        }
         return $this->items[$key];
     }
 
@@ -61,7 +64,8 @@ class RouteCollection implements \Countable, \IteratorAggregate
             if ($res instanceof Route) {
                 $this->tree['full'][$node][] = $res;
             } else {
-                $this->tree['full'][$node] = $res;
+                $this->tree['full'][$node] = isset($this->tree['full'][$node])
+                    ? array_merge($this->tree['full'][$node], $res) : $res;
             }
         }
     }

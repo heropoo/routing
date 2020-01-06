@@ -49,7 +49,7 @@ $router->group(['prefix' => 'admin2/', 'middleware' => 'auth2', 'namespace' => '
 
 $router->get('/test/{name}', 'TestController::home');
 $router->controller('test', 'TestController');
-$router->resource('user', 'UserController');
+
 
 $routes = $router->getRoutes();
 //var_dump(count($routes));

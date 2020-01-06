@@ -1,12 +1,12 @@
 <?php
 
-namespace app\controllers;
+namespace Moon\Routing\Tests;
 
 class TestController
 {
     public function indexAction()
     {
-
+        
     }
 
     public function createAction()

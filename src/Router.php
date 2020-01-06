@@ -152,7 +152,7 @@ class Router
      * @param string|\Closure $action
      * @return Route
      */
-    public function createRoute($path, $methods, $action)
+    public function createRoute($path, $methods, $action, $name = null)
     {
         if (isset($this->attributes['prefix'])) {
             $path = $this->attributes['prefix'] . '/' . $path;
@@ -168,7 +168,13 @@ class Router
             $action = str_replace('\\\\', '\\', $action);
         }
 
+        if (is_null($name)) {
+            //$name = md5(implode('.', (array)$methods) . '.' . $path);
+            $name = implode('.', (array)$methods) . ':' . $path;
+        }
+
         $route = new Route([
+            'name' => $name,
             'path' => $path,
             'methods' => (array)$methods,
             'action' => $action
@@ -190,12 +196,7 @@ class Router
      */
     public function addRoute($path, $methods, $action, $name = null)
     {
-        $route = $this->createRoute($path, $methods, $action);
-        if (is_null($name)) {
-            //$name = md5(implode('.', $route->getMethods()) . '.' . $route->getPath());
-            $name = implode('.', $route->getMethods()) . ':' . $route->getPath();
-        }
-        $route->name($name);
+        $route = $this->createRoute($path, $methods, $action, $name);
         $this->routes->add($name, $route);
 
         return $route;
@@ -209,6 +210,7 @@ class Router
     {
         $controllerClass = isset($this->attributes['namespace'])
             ? $this->attributes['namespace'] . '\\' . $controller : $controller;
+
         if (!class_exists($controllerClass)) {
             throw new \InvalidArgumentException("Class $controllerClass is not found.");
         }
@@ -223,14 +225,14 @@ class Router
             ) {
                 $method = substr($name, 0, -strlen($this->actionSuffix));
                 $sub_path = $this->convertUppercaseToDash($method);
-                $this->addRoute($path . '/' . $sub_path,
-                    self::$verbs, $controller . $this->actionSeparation . $name, $path . '.' . $sub_path);
+                $this->any($path . '/' . $sub_path, $controller . $this->actionSeparation . $name, trim($path . '.' . $sub_path, '/'));
             }
         }
     }
 
     public function resource($path, $controller)
     {
+        $path = trim($path, '/');
         $this->addRoute($path, ['GET'], $controller . $this->actionSeparation . 'index', $path . '.index');
         $this->addRoute($path . '/create', ['GET'], $controller . $this->actionSeparation . 'create', $path . '.create');
         $this->addRoute($path, ['POST'], $controller . $this->actionSeparation . 'store', $path . '.store');

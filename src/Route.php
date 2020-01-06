@@ -42,17 +42,6 @@ class Route
     protected $middleware = [];
 
     /**
-     * set name
-     * @param string $name
-     * @return $this
-     */
-    public function name($name)
-    {
-        $this->name = $name;
-        return $this;
-    }
-
-    /**
      * set methods
      * @param string | array $methods
      * @return $this
