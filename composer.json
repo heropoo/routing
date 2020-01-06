@@ -1,6 +1,6 @@
 {
   "name": "heropoo/routing",
-  "description": "A simple and fast route",
+  "description": "A simple and fast route. Use tree structure storage, fast matching!",
   "type": "library",
   "license": "MIT",
   "authors": [
