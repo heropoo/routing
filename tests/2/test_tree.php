@@ -4,8 +4,6 @@
  * Time: 18:38
  */
 
-$route = new stdClass();
-
 $list = [
     '/' => '',
     '/login' => '',
@@ -14,7 +12,7 @@ $list = [
     '/user/{id}/edit' => '',
     '/user/{id}/delete' => '',
     '/api' => '',
-    '/api/demo' => '',
+    '/api/demo/create' => '',
     '/{aid}/api/demo' => '',
 ];
 
@@ -28,9 +26,9 @@ foreach ($list as $key => $value) {
     $list[$key] = $value;
 }
 
-//$list = array_values($list);
+$list = array_values($list);
 
-//var_dump($list);
+var_dump($list);exit;
 
 $tree = [];
 

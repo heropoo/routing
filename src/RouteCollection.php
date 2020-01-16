@@ -49,47 +49,34 @@ class RouteCollection implements \Countable, \IteratorAggregate
     public function addToTree(Route $route)
     {
         $path = $route->getPath();
-        $pathArr = explode('/', $path);
-        unset($pathArr[0]);
-        $node = $pathArr[1];
-
-        if (strpos($node, '{') !== false) {
+        if (strpos($path, '{') !== false) {
             $this->tree['regex'][$route->getName()] = $route;
             return;
         }
-        $res = $this->parseNode($pathArr, $route, $hasRegex);
-        if ($hasRegex) {
-            $this->tree['regex'][$route->getName()] = $route;
-        } else {
-            if ($res instanceof Route) {
-                $this->tree['full'][$node][] = $res;
-            } else {
-                $this->tree['full'][$node] = isset($this->tree['full'][$node])
-                    ? array_merge($this->tree['full'][$node], $res) : $res;
-            }
+
+        $pathArr = explode('/', $path);
+        unset($pathArr[0]);
+
+        $tree = $this->parseNode($pathArr, $route);
+
+        $node = array_key_first($tree);
+
+        if(isset($this->tree['full'][$node])){
+            $this->tree['full'][$node] = array_merge_recursive($this->tree['full'][$node], $tree[$node]);
+        }else{
+            $this->tree['full'][$node] = $tree[$node];
         }
     }
 
-    protected function parseNode($pathArr, Route $route, &$hasRegex = false)
+    protected function parseNode($pathArr, Route $route)
     {
-        array_values($pathArr);
-        $node = array_pop($pathArr);
-
+        $tree = [];
+        $node = array_shift($pathArr);
         if (empty($pathArr)) {
-            return $route;
-        } else {
-            if ($hasRegex || strpos($node, '{') !== false) {
-                $hasRegex = true;
-                return false;
-            }
-            //$tree[$node] = $this->parseNode($pathArr, $route, $hasRegex);
-            $res = $this->parseNode($pathArr, $route, $hasRegex);
-            if ($res instanceof Route) {
-                $tree[$node][] = $this->parseNode($pathArr, $route, $hasRegex);
-            } else {
-                $tree[$node] = $this->parseNode($pathArr, $route, $hasRegex);
-            }
+            $tree[$node][] = $route;
+            return $tree;
         }
+        $tree[$node] = $this->parseNode($pathArr, $route);
         return $tree;
     }
 }

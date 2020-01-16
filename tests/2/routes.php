@@ -33,6 +33,7 @@ $router->group(['prefix' => 'user'], function ($router) {
 $router->group(['prefix' => 'api'], function (Router $router) {
     // match GET or POST request method
     $router->get('', 'ApiController::index');
+    $router->get('address/create', 'ApiController::addressCreate');
     $router->match(['get', 'POST'], '/login', 'ApiController::login');
 
     $router->group(['prefix' => 'user', 'namespace' => 'Api'], function (Router $router) {
@@ -47,5 +48,7 @@ $router->group(['prefix' => 'api'], function (Router $router) {
 // match all request method
 $router->any('/other', 'ApiController::other');
 
-$router->get('/test', 'TestController::test1');
-$router->post('/test', 'TestController::test2');
+$router->get('/r/test', 'TestController::test1');
+$router->post('/r/test', 'TestController::test2');
+
+//var_dump($router->getRoutes()->getTree()['full']);

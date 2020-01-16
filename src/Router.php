@@ -300,6 +300,55 @@ class Router
      * @return array
      * @throws UrlMatchException
      */
+    public function simpleDispatch($path, $method)
+    {
+        foreach ($this->routes as $route) {
+            /** @var Route $route */
+            if (in_array($method, $route->getMethods())) {
+                $pattern = "#^{$route->getPath()}$#U";
+                $param_keys = [];
+                //var_dump("#({.*?})#", $route->getPath());
+                if ($res = preg_match_all("#({.*?})#", $route->getPath(), $matches)) {
+                    //var_dump($matches);
+                    foreach ($matches[0] as $v) {
+                        $tmp = explode(':', substr($v, 1, strlen($v) - 2));
+                        $param_key = $tmp[0];
+                        if (count($tmp) > 2) {
+                            unset($tmp[0]);
+                            $tmp[1] = implode(':', $tmp);
+                        }
+                        //$patterns[$tmp[0]] = $tmp[1];
+                        $param_pattern = isset($tmp[1]) ? '(' . $tmp[1] . ')' : '([^/]+)'; // default param pattern
+                        $pattern = str_replace($v, $param_pattern, $pattern);
+                        $param_keys[] = $param_key;
+                    }
+                }
+//                echo $pattern;
+                if (@preg_match($pattern, $path, $matches)) {
+//                    var_dump($matches);
+                    unset($matches[0]);
+                    $params = [];
+                    foreach ($matches as $v) {
+                        $key = array_shift($param_keys);
+                        $params[$key] = $v;
+                    }
+                    return [
+                        'route' => $route,
+                        'params' => $params
+                    ];
+                }
+            }
+        }
+        throw new UrlMatchException('No Route Matched for path: "' . $path . '"', 404);
+    }
+
+    /**
+     * Dispatch
+     * @param string $path
+     * @param string $method
+     * @return array
+     * @throws UrlMatchException
+     */
     public function dispatch($path, $method)
     {
         $pathArr = explode('/', $path);
