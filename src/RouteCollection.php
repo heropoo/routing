@@ -59,11 +59,11 @@ class RouteCollection implements \Countable, \IteratorAggregate
 
         $tree = $this->parseNode($pathArr, $route);
 
-        $node = array_key_first($tree);
+        $node = $this->array_key_first($tree);
 
-        if(isset($this->tree['full'][$node])){
+        if (isset($this->tree['full'][$node])) {
             $this->tree['full'][$node] = array_merge_recursive($this->tree['full'][$node], $tree[$node]);
-        }else{
+        } else {
             $this->tree['full'][$node] = $tree[$node];
         }
     }
@@ -78,5 +78,18 @@ class RouteCollection implements \Countable, \IteratorAggregate
         }
         $tree[$node] = $this->parseNode($pathArr, $route);
         return $tree;
+    }
+
+    /**
+     * @see https://www.php.net/manual/zh/function.array-key-first.php
+     * @param array $arr
+     * @return int|string|null
+     */
+    protected function array_key_first(array $arr)
+    {
+        foreach ($arr as $key => $unused) {
+            return $key;
+        }
+        return null;
     }
 }
