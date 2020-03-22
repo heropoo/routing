@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Date: 2019-09-06
  * Time: 17:57
@@ -75,7 +76,7 @@ echo '$_SERVER[\'PHP_SELF\']: ' . $_SERVER['PHP_SELF'] . '<br>';
 echo '$_SERVER[\'SCRIPT_NAME\']: ' . $_SERVER['SCRIPT_NAME'] . '<br>';
 
 $uri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
-$path = substr($uri, -(strlen($uri) - strlen(dirname($_SERVER['SCRIPT_NAME']))));
+$path = substr($uri, - (strlen($uri) - strlen(dirname($_SERVER['SCRIPT_NAME']))));
 $path = str_replace('//', '/', '/' . $path);
 $method = $_SERVER['REQUEST_METHOD'];
 
