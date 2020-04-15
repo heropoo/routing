@@ -87,4 +87,4 @@ Now use matched result to handle your controller's method or Closure! ＼( ^▽^
 
 ## Sponsor
 
-<a href="https://www.jetbrains.com/?from=heropoo/routing"><img src="https://www.ioio.pw/assets/jetbrains-blackandwhite.png" height=100 alt="Jetbrains" title="Jetbrains"></a>
+<a href="https://www.jetbrains.com/?from=heropoo/routing"><img src="https://www.ioio.pw/static-assets/jetbrains-blackandwhite.png" height=100 alt="Jetbrains" title="Jetbrains"></a>
