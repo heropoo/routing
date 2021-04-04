@@ -99,7 +99,7 @@ class RouterTest extends TestCase
         $this->assertInstanceOf('Moon\Routing\Route', $res['route']);
         $this->assertEquals('DELETE:/test/delete/{id}', $res['route']->getName());
         $this->assertEquals(['DELETE'], $res['route']->getMethods());
-        $this->assertEquals('/test/delete/{id}', $res['route']->getPath()); //TODO /test
+        $this->assertEquals('/test/delete/{id}', $res['route']->getPath());
         $this->assertEquals('regex', $res['match_mode']);
         $this->assertEquals(['id' => '123'], $res['params']);
         $this->assertEquals('checkAuth', $res['route']->getMiddleware()[3]);
