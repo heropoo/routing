@@ -5,7 +5,7 @@ A simple and fast route.Use tree structure storage, fast matching! 一个简单�
 
 [![Latest Stable Version](https://poser.pugx.org/heropoo/routing/v/stable)](https://packagist.org/packages/heropoo/routing)
 [![Total Downloads](https://poser.pugx.org/heropoo/routing/downloads)](https://packagist.org/packages/heropoo/routing)
-[![License](https://poser.pugx.org/heropoo/routing/license)](https://packagist.org/packages/heropoo/routing)
+[![License](https://poser.pugx.org/heropoo/routing/license)](./LICENSE)
 
 ## Install
 To install it via `composer`
