@@ -1,5 +1,7 @@
 # Routing
-A simple and fast route.Use tree structure storage, fast matching! 一个简单快速的路由，使用树形结构存储匹配更快！
+A simple and fast route.Use tree structure storage, fast matching!  If you like, order a star for me~ ⭐
+
+一个简单快速的路由，使用树形结构存储匹配更快！ 如果你喜欢，帮我点个star吧~ ⭐
 
 [中文说明](./README_CN.md)
 
