@@ -375,7 +375,7 @@ class Router
                         return [
                             'route' => $route,
                             'params' => [],
-                            'match_by_tree' => true // for debug
+                            'match_mode' => 'tree' // for debug
                         ];
                     } else {
                         $pathMatchedRoute = $route;
@@ -433,7 +433,8 @@ class Router
                     }
                     return [
                         'route' => $route,
-                        'params' => $params
+                        'params' => $params,
+                        'match_mode' => 'regex' //for debug
                     ];
                 }
             }

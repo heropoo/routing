@@ -84,8 +84,24 @@ class RouterTest extends TestCase
      */
     public function testMatch(Router $router)
     {
-        $res = $router->dispatch('/test/', 'GET');
+        $res = $router->dispatch('/test/', 'GET'); //TODO /test
         //var_dump($res);
-        $this->assertInstanceOf(Route::class, $res['route']);
+        $this->assertInstanceOf('Moon\Routing\Route', $res['route']);
+        $this->assertEquals('test.get.index', $res['route']->getName());
+        $this->assertEquals(['GET'], $res['route']->getMethods());
+        $this->assertEquals('/test/', $res['route']->getPath()); //TODO /test
+        $this->assertEquals('tree', $res['match_mode']);
+        $this->assertEquals([], $res['params']);
+
+
+        $res = $router->dispatch('/test/delete/123', 'DELETE');
+//        var_dump($res);
+        $this->assertInstanceOf('Moon\Routing\Route', $res['route']);
+        $this->assertEquals('DELETE:/test/delete/{id}', $res['route']->getName());
+        $this->assertEquals(['DELETE'], $res['route']->getMethods());
+        $this->assertEquals('/test/delete/{id}', $res['route']->getPath()); //TODO /test
+        $this->assertEquals('regex', $res['match_mode']);
+        $this->assertEquals(['id' => '123'], $res['params']);
+        $this->assertEquals('checkAuth', $res['route']->getMiddleware()[3]);
     }
 }
