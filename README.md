@@ -85,6 +85,14 @@ var_dump($res);
 
 Now use matched result to handle your controller's method or Closure! ＼( ^▽^ )／
 
+## Tests
+```
+# Unix like OS
+./vendor/bin/phpunit
+# Windows
+.\vendor\bin\phpunit
+```
+
 ## Sponsor
 
 <a href="https://www.jetbrains.com/?from=heropoo/routing"><img src="https://www.ioio.pw/static-assets/jetbrains-blackandwhite.png" height=100 alt="Jetbrains" title="Jetbrains"></a>
