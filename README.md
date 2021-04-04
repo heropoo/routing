@@ -87,10 +87,7 @@ Now use matched result to handle your controller's method or Closure! ＼( ^▽^
 
 ## Tests
 ```
-# Unix like OS
-./vendor/bin/phpunit
-# Windows
-.\vendor\bin\phpunit
+composer run-script test
 ```
 
 ## Sponsor

@@ -85,10 +85,7 @@ $res = $router->dispatch($path, $method);
 
 ## 测试
 ```
-# Unix like OS
-./vendor/bin/phpunit
-# Windows
-.\vendor\bin\phpunit
+composer run-script test
 ```
 
 Now use matched result to handle your controller's method or Closure! ＼( ^▽^ )／
