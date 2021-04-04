@@ -73,5 +73,19 @@ class RouterTest extends TestCase
                 $this->assertEquals($route->getMiddleware()[3], 'checkAuth');
             }
         }
+
+        return $router;
+    }
+
+    /**
+     * @depends testRouterAdd
+     *
+     * @param Router $router
+     */
+    public function testMatch(Router $router)
+    {
+        $res = $router->dispatch('/test/', 'GET');
+        //var_dump($res);
+        $this->assertInstanceOf(Route::class, $res['route']);
     }
 }
