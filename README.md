@@ -1,4 +1,4 @@
-# routing
+# Routing
 A simple and fast route.Use tree structure storage, fast matching! 一个简单快速的路由，使用树形结构存储匹配更快！
 
 [中文说明](./README_CN.md)
@@ -7,20 +7,20 @@ A simple and fast route.Use tree structure storage, fast matching! 一个简单�
 [![Total Downloads](https://poser.pugx.org/heropoo/routing/downloads)](https://packagist.org/packages/heropoo/routing)
 [![License](https://poser.pugx.org/heropoo/routing/license)](https://packagist.org/packages/heropoo/routing)
 
-## install
+## Install
 To install it via `composer`
 ```sh
 composer require heropoo/routing
 ```
 
-## feature
+## Feature
 - Support restful style route
 - Support route group and add some attributes (like namespace,middleware,prefix..)
 - Support route params and limit param's type
 - Support regex
 - Use tree structure storage, fast matching! 
 
-## example:
+## Example:
 ```php
 <?php
 
