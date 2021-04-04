@@ -150,6 +150,7 @@ class Router
      * @param string $path
      * @param string|array $methods
      * @param string|\Closure $action
+     * @param string $name
      * @return Route
      */
     public function createRoute($path, $methods, $action, $name = null)

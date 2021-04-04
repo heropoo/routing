@@ -40,6 +40,8 @@ class RouterTest extends TestCase
     /**
      * @depends testRouter
      *
+     * @param Router $router
+     *
      */
     public function testRouterAdd(Router $router)
     {
@@ -47,11 +49,11 @@ class RouterTest extends TestCase
 
         $router->get('closure', function () {
             return $_SERVER['REQUEST_METHOD'] . ' test';
-        })->name('test.get.closure');
+        }, 'test.get.closure');
 
         $router->post('closure/{id}', function ($id) {
             return $_SERVER['REQUEST_METHOD'] . ' test ' . $id;
-        })->name('test.post.closure');
+        }, 'test.post.closure');
 
         $this->assertCount(2, $router->getRoutes());
         //var_dump($router->getRoutes());
