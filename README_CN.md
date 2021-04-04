@@ -20,7 +20,7 @@ composer require heropoo/routing
 - 支持正则表单式 
 - 使用树结构存储，匹配速度快
 
-## example:
+## 例子:
 ```php
 <?php
 
@@ -81,6 +81,14 @@ $res = $router->dispatch($path, $method);
 
 // 该有的都有了,调用你的控制器吧
 
+```
+
+## 测试
+```
+# Unix like OS
+./vendor/bin/phpunit
+# Windows
+.\vendor\bin\phpunit
 ```
 
 Now use matched result to handle your controller's method or Closure! ＼( ^▽^ )／
