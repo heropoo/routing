@@ -16,11 +16,13 @@ class RouteCollection implements \Countable, \IteratorAggregate
 
     protected $tree = ['full' => [], 'regex' => []];
 
+    #[\ReturnTypeWillChange]
     public function count()
     {
         return count($this->items);
     }
 
+    #[\ReturnTypeWillChange]
     public function getIterator()
     {
         return new \ArrayIterator($this->items);
